@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EOST Packer</string>
+    <string name="nav_home">首页</string>
+    <string name="nav_pack">打包</string>
+    <string name="nav_settings">设置</string>
+
+    <string name="welcome">欢迎使用 EOST Packer</string>
+    <string name="welcome_sub">由 龙腾OS 出品 · 专为安卓设备打造的一键打包与加固工具</string>
+    <string name="announcements">公告</string>
+    <string name="ann_empty">暂无公告</string>
+
+    <string name="upload_hint">请选择安卓项目根目录（zip 压缩包或文件夹）</string>
+    <string name="choose_zip">选择压缩包</string>
+    <string name="choose_folder">选择文件夹</string>
+    <string name="project_path">项目路径</string>
+    <string name="btn_settings">设置</string>
+    <string name="btn_fix">补全</string>
+    <string name="btn_ai">AI 帮助</string>
+    <string name="btn_pack">开始打包</string>
+    <string name="logs">日志</string>
+    <string name="log_empty">日志将在这里显示…</string>
+
+    <string name="perm_title">添加权限</string>
+    <string name="perm_add">添加</string>
+    <string name="perm_delete">删除</string>
+
+    <string name="ai_config">AI 调用配置</string>
+    <string name="ai_endpoint">API 地址</string>
+    <string name="ai_key">API Key</string>
+    <string name="ai_model">模型名称</string>
+    <string name="save">保存</string>
+
+    <string name="sign_title">签名</string>
+    <string name="sign_import">导入签名文件</string>
+    <string name="sign_v1">V1 (JAR)</string>
+    <string name="sign_v2">V2 (APK)</string>
+    <string name="sign_v1v2">V1 + V2</string>
+
+    <string name="theme_title">主题</string>
+    <string name="theme_light">明亮</string>
+    <string name="theme_dark">暗黑</string>
+    <string name="theme_auto">跟随设备</string>
+    <string name="accent_color">强调色</string>
+
+    <string name="lang_title">语言</string>
+    <string name="lang_zh">简体中文</string>
+    <string name="lang_en">English</string>
+
+    <string name="check_update">检查更新</string>
+    <string name="about">关于</string>
+    <string name="developer">开发者：龙腾OS</string>
+    <string name="version">版本 1.0.0</string>
+
+    <string name="progress_running">正在打包…</string>
+    <string name="progress_done">打包完成</string>
+    <string name="progress_fail">打包失败</string>
+</resources>

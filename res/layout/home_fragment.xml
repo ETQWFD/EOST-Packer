@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent" android:layout_height="wrap_content">
+
+        <LinearLayout style="@style/Card" android:orientation="vertical"
+            android:background="@color/primary" android:layout_margin="0dp"
+            android:padding="24dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/welcome" android:textSize="22sp"
+                android:textColor="#FFFFFF" android:textStyle="bold"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/welcome_sub" android:textSize="13sp"
+                android:textColor="#E3ECFF" android:layout_marginTop="6dp"/>
+        </LinearLayout>
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/announcements" android:textSize="16sp"
+            android:textStyle="bold" android:textColor="@color/text"
+            android:layout_margin="16dp"/>
+
+        <LinearLayout android:id="@+id/ann_list"
+            android:orientation="vertical"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:paddingHorizontal="8dp"/>
+
+    </LinearLayout>
+</ScrollView>

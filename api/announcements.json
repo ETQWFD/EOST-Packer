@@ -1,0 +1,9 @@
+[
+  {
+    "id": 1,
+    "title": "EOST Packer 正式发布",
+    "version": "1.0.0",
+    "date": "2026-10-25",
+    "body": "首个版本发布。支持在手机上一键打包安卓应用，内置 aapt2 / d8 / zipalign / apksigner，支持 32 / 64 位 / x86 设备，安卓 15 Material You 风格界面。"
+  }
+]

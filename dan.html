@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EOST 后台</title>
+<style>
+body{font-family:-apple-system,sans-serif;background:#1a1c1e;color:#e3e3e7;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}
+.box{background:#242629;padding:32px;border-radius:12px;width:90%;max-width:480px}
+h1{font-size:18px;margin-bottom:16px}
+input,textarea{width:100%;padding:10px;margin:6px 0;border-radius:6px;border:1px solid #444;background:#121416;color:#fff;font-size:14px}
+button{background:#1f6feb;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;margin-top:8px}
+.row{margin:12px 0}
+.item{background:#121416;padding:10px;border-radius:6px;margin:6px 0;font-size:13px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="box" id="login">
+  <h1>管理员登录</h1>
+  <input type="password" id="pw" placeholder="请输入密码">
+  <button onclick="login()">登录</button>
+</div>
+<div class="box hide" id="panel">
+  <h1>EOST 管理后台</h1>
+  <div class="row">下载总数：<b id="dl">0</b></div>
+  <h2 style="font-size:15px;margin-top:16px">发布新公告</h2>
+  <input id="t" placeholder="标题">
+  <input id="v" placeholder="版本号 (如 1.0.1)">
+  <textarea id="b" rows="3" placeholder="公告内容"></textarea>
+  <button onclick="add()">发布</button>
+  <h2 style="font-size:15px;margin-top:16px">公告列表</h2>
+  <div id="list"></div>
+  <button onclick="logout()" style="background:#444">退出</button>
+</div>
+<script>
+function login(){if(document.getElementById('pw').value==='1234'){
+  document.getElementById('login').classList.add('hide');
+  document.getElementById('panel').classList.remove('hide');
+  render();
+}else{alert('密码错误')}}
+function logout(){location.reload()}
+function render(){
+  let a=JSON.parse(localStorage.getItem('eost_ann')||'[]');
+  document.getElementById('list').innerHTML=a.map((x,i)=>
+    `<div class="item"><b>${x.title}</b> (${x.version})<br>${x.body}
+     <br><small style="color:#888">${x.date}</small>
+     <button onclick="del(${i})" style="background:#d93025;padding:4px 10px;font-size:12px">删除</button></div>`).join('');
+  document.getElementById('dl').textContent=localStorage.getItem('eost_dl')||'0';
+}
+function add(){
+  let a=JSON.parse(localStorage.getItem('eost_ann')||'[]');
+  a.unshift({id:Date.now(),title:t.value,version:v.value,body:b.value,date:new Date().toISOString().slice(0,10)});
+  localStorage.setItem('eost_ann',JSON.stringify(a));
+  t.value=v.value=b.value='';render();
+}
+function del(i){
+  let a=JSON.parse(localStorage.getItem('eost_ann')||'[]');
+  a.splice(i,1);localStorage.setItem('eost_ann',JSON.stringify(a));render();
+}
+</script>
+</body>
+</html>

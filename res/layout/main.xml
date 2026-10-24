@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:id="@+id/tabbar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:elevation="8dp">
+
+        <Button android:id="@+id/tab_home" style="@style/Btn"
+            android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="@string/nav_home" android:textSize="14sp"
+            android:background="?android:attr/selectableItemBackground"
+            android:textColor="@color/primary"/>
+        <Button android:id="@+id/tab_pack" style="@style/Btn"
+            android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="@string/nav_pack" android:textSize="14sp"
+            android:background="?android:attr/selectableItemBackground"
+            android:textColor="@color/text_sub"/>
+        <Button android:id="@+id/tab_settings" style="@style/Btn"
+            android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="@string/nav_settings" android:textSize="14sp"
+            android:background="?android:attr/selectableItemBackground"
+            android:textColor="@color/text_sub"/>
+    </LinearLayout>
+</LinearLayout>

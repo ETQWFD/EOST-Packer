@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent" android:layout_height="wrap_content">
+
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/upload_hint" android:textSize="14sp"
+                android:textColor="@color/text_sub"/>
+            <LinearLayout android:orientation="horizontal"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
+                <Button android:id="@+id/btn_zip" style="@style/Btn"
+                    android:text="@string/choose_zip"/>
+                <Button android:id="@+id/btn_folder" style="@style/Btn"
+                    android:text="@string/choose_folder"/>
+            </LinearLayout>
+            <TextView android:id="@+id/tv_path"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/project_path" android:textSize="12sp"
+                android:textColor="@color/primary" android:layout_marginTop="8dp"
+                android:fontFamily="monospace"/>
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card" android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <Button android:id="@+id/btn_pack_settings" style="@style/Btn"
+                android:text="@string/btn_settings"/>
+            <Button android:id="@+id/btn_fix" style="@style/Btn"
+                android:text="@string/btn_fix"/>
+            <Button android:id="@+id/btn_ai" style="@style/Btn"
+                android:text="@string/btn_ai"/>
+            <Button android:id="@+id/btn_pack" style="@style/Btn"
+                android:text="@string/btn_pack"
+                android:backgroundTint="@color/primary"
+                android:textColor="#00000000"/>
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/logs" android:textSize="14sp"
+                android:textStyle="bold"/>
+            <ScrollView android:id="@+id/log_scroll"
+                android:layout_width="match_parent" android:layout_height="240dp"
+                android:layout_marginTop="8dp"
+                android:background="#0F1113" android:padding="8dp">
+                <TextView android:id="@+id/tv_log"
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="@string/log_empty" android:textSize="11sp"
+                    android:textColor="#8AB4F8" android:fontFamily="monospace"/>
+            </ScrollView>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

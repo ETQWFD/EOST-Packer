@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EOST Packer · 龙腾OS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f6f7f9;color:#1a1c1e;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto;padding:24px}
+.hero{background:linear-gradient(135deg,#1f6feb,#7b3fe4);color:#fff;padding:56px 32px;border-radius:16px;margin-bottom:24px}
+.hero h1{font-size:32px;margin-bottom:8px}
+.hero p{opacity:.92;font-size:15px}
+.dl{display:inline-block;margin-top:20px;background:#fff;color:#1f6feb;padding:12px 28px;border-radius:999px;font-weight:600;text-decoration:none;font-size:15px}
+.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card h2{font-size:18px;margin-bottom:12px}
+.ann{padding:12px 0;border-bottom:1px solid #eee}
+.ann:last-child{border-bottom:none}
+.ann .t{font-weight:600}
+.ann .d{font-size:12px;color:#888;margin:2px 0}
+.ann .b{font-size:14px;color:#444}
+.meta{display:flex;gap:24px;font-size:13px;color:#666;margin-top:16px}
+footer{text-align:center;color:#999;font-size:12px;padding:32px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <h1>EOST Packer</h1>
+    <p>在手机上一键打包安卓应用、自动签名、EOST 加固。支持 32 / 64 位 / x86 设备，安卓 15 风格界面。</p>
+    <a class="dl" id="dlbtn" href="#">下载最新版</a>
+  </div>
+
+  <div class="card">
+    <h2>公告</h2>
+    <div id="ann"><div class="ann"><div class="t">加载中…</div></div></div>
+  </div>
+
+  <div class="card">
+    <h2>功能</h2>
+    <div class="meta">
+      <span>✓ 真实打包（aapt2 / d8 / zipalign / apksigner）</span>
+      <span>✓ EOST 加固</span>
+      <span>✓ AI 帮助</span>
+      <span>✓ 多语言</span>
+      <span>✓ 暗黑模式</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>下载统计</h2>
+    <p id="cnt">已下载 <b id="n">0</b> 次</p>
+  </div>
+
+  <footer>© 2026 龙腾OS · ET协会 · EOST Packer</footer>
+</div>
+<script>
+fetch('api/announcements.json').then(r=>r.json()).then(a=>{
+  document.getElementById('ann').innerHTML=a.map(x=>
+    `<div class="ann"><div class="t">${x.title} <small style="color:#888">(${x.version})</small></div>
+     <div class="d">${x.date}</div><div class="b">${x.body}</div></div>`).join('');
+}).catch(()=>{document.getElementById('ann').innerHTML='<div class="ann">暂无公告</div>'});
+fetch('api/latest.json').then(r=>r.json()).then(j=>{
+  document.getElementById('dlbtn').href=j.url;
+  document.getElementById('dlbtn').textContent='下载 '+j.version;
+});
+let n=parseInt(localStorage.getItem('eost_dl')||'0')+1;
+localStorage.setItem('eost_dl',n);
+fetch('api/counter.json').catch(()=>{});
+document.getElementById('n').textContent=n;
+</script>
+</body>
+</html>

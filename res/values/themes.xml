@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.EOST" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">#1F6FEB</item>
+        <item name="android:colorPrimaryDark">#155AB8</item>
+        <item name="android:colorAccent">#1F6FEB</item>
+        <item name="android:windowBackground">#F7F8FA</item>
+        <item name="android:textColorPrimary">#1A1C1E</item>
+        <item name="android:textColorSecondary">#5F6368</item>
+        <item name="android:navigationBarColor">#FFFFFF</item>
+        <item name="android:statusBarColor">#1F6FEB</item>
+    </style>
+
+    <style name="Theme.EOST.Dark" parent="android:Theme.Material.NoActionBar">
+        <item name="android:colorPrimary">#8AB4F8</item>
+        <item name="android:colorPrimaryDark">#1A1C1E</item>
+        <item name="android:colorAccent">#8AB4F8</item>
+        <item name="android:windowBackground">#121416</item>
+        <item name="android:textColorPrimary">#E3E3E7</item>
+        <item name="android:textColorSecondary">#9AA0A6</item>
+        <item name="android:navigationBarColor">#121416</item>
+        <item name="android:statusBarColor">#121416</item>
+    </style>
+
+    <style name="Card">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">12dp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:background">#FFFFFFFF</item>
+        <item name="android:elevation">2dp</item>
+    </style>
+
+    <style name="Btn" parent="android:Widget.Material.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">100dp</item>
+        <item name="android:layout_margin">6dp</item>
+    </style>
+</resources>

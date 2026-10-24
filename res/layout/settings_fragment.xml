@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent" android:layout_height="wrap_content">
+
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/ai_config" android:textSize="15sp" android:textStyle="bold"/>
+            <EditText android:id="@+id/ai_endpoint" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="@string/ai_endpoint"
+                android:layout_marginTop="8dp" android:inputType="textUri"/>
+            <EditText android:id="@+id/ai_key" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="@string/ai_key"
+                android:layout_marginTop="8dp" android:inputType="textPassword"/>
+            <EditText android:id="@+id/ai_model" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="@string/ai_model"
+                android:layout_marginTop="8dp"/>
+            <Button android:id="@+id/btn_save_ai" style="@style/Btn"
+                android:text="@string/save"/>
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/sign_title" android:textSize="15sp" android:textStyle="bold"/>
+            <RadioGroup android:id="@+id/sign_mode" android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+                <RadioButton android:id="@+id/sign_v1" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="@string/sign_v1"/>
+                <RadioButton android:id="@+id/sign_v2" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="@string/sign_v2"
+                    android:layout_marginStart="12dp"/>
+                <RadioButton android:id="@+id/sign_both" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="@string/sign_v1v2"
+                    android:layout_marginStart="12dp" android:checked="true"/>
+            </RadioGroup>
+            <Button android:id="@+id/btn_import_sign" style="@style/Btn"
+                android:text="@string/sign_import"/>
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/theme_title" android:textSize="15sp" android:textStyle="bold"/>
+            <RadioGroup android:id="@+id/theme_mode" android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+                <RadioButton android:id="@+id/theme_light" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="@string/theme_light"/>
+                <RadioButton android:id="@+id/theme_dark" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="@string/theme_dark"
+                    android:layout_marginStart="12dp"/>
+                <RadioButton android:id="@+id/theme_auto" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="@string/theme_auto"
+                    android:layout_marginStart="12dp" android:checked="true"/>
+            </RadioGroup>
+            <LinearLayout android:orientation="horizontal"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+                <View android:id="@+id/color_blue" android:layout_width="32dp" android:layout_height="32dp"
+                    android:background="@color/primary" android:layout_margin="6dp"/>
+                <View android:id="@+id/color_green" android:layout_width="32dp" android:layout_height="32dp"
+                    android:background="#188038" android:layout_margin="6dp"/>
+                <View android:id="@+id/color_red" android:layout_width="32dp" android:layout_height="32dp"
+                    android:background="#D93025" android:layout_margin="6dp"/>
+                <View android:id="@+id/color_purple" android:layout_width="32dp" android:layout_height="32dp"
+                    android:background="#7B1FA2" android:layout_margin="6dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/lang_title" android:textSize="15sp" android:textStyle="bold"/>
+            <RadioGroup android:id="@+id/lang_mode" android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+                <RadioButton android:id="@+id/lang_zh" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="@string/lang_zh"
+                    android:checked="true"/>
+                <RadioButton android:id="@+id/lang_en" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:text="@string/lang_en"
+                    android:layout_marginStart="12dp"/>
+            </RadioGroup>
+        </LinearLayout>
+
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <Button android:id="@+id/btn_check_update" style="@style/Btn"
+                android:layout_width="match_parent"
+                android:text="@string/check_update"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/about" android:textSize="15sp" android:textStyle="bold"
+                android:layout_marginTop="12dp"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/developer" android:textSize="13sp"
+                android:textColor="@color/text_sub" android:layout_marginTop="4dp"/>
+            <TextView android:id="@+id/tv_grade" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textSize="12sp"
+                android:textColor="@color/primary" android:layout_marginTop="4dp"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:text="@string/version" android:textSize="12sp"
+                android:textColor="@color/text_sub" android:layout_marginTop="4dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
