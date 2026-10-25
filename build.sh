@@ -37,8 +37,18 @@ find $WORK/classes -name "*.class" > $WORK/classes.txt
 d8 --lib $PLATFORM --min-api 21 --output $WORK/dex @$WORK/classes.txt \
   libs/commons-compress.jar libs/xz.jar 2>&1 | tee $WORK/d8.log
 
-echo "[5/6] merge dex into apk"
+echo "[5/6] merge dex + jniLibs into apk"
 cd $WORK/dex && zip -u ../base.apk classes.dex && cd ../..
+# 打包 jniLibs 到 lib/<abi>/（Android 安装时自动解压到 nativeLibraryDir，天然可执行）
+if [ -d jniLibs ]; then
+  rm -rf build/lib && mkdir -p build/lib
+  for abi in arm64-v8a armeabi-v7a; do
+    if [ -d "jniLibs/$abi" ]; then
+      cp -r "jniLibs/$abi" "build/lib/$abi"
+    fi
+  done
+  (cd build && zip -ru ../$WORK/base.apk lib/)
+fi
 
 echo "[6/6] zipalign + apksigner (ETC, v1+v2)"
 zipalign -f 4 $WORK/base.apk $WORK/aligned.apk

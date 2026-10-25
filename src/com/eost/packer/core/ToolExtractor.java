@@ -120,8 +120,32 @@ public class ToolExtractor {
         } catch (Exception ignored) {}
     }
 
-    public File bin(String name) { return new File(abiDir, "bin/" + name); }
-    public File libDir() { return new File(abiDir, "lib"); }
-    public File androidJar() { return new File(baseDir, "android.jar"); }
+    /** 优先用 nativeLibraryDir 下的 .so（Android 安装时自动解压，天然可执行） */
+    public File bin(String name) {
+        try {
+            String libDir = ctx.getApplicationInfo().nativeLibraryDir;
+            File so = new File(libDir, "lib" + name + ".so");
+            if (so.exists()) return so;
+        } catch (Exception ignored) {}
+        return new File(abiDir, "bin/" + name);
+    }
+    public File libDir() {
+        try {
+            File libDeps = new File(ctx.getApplicationInfo().nativeLibraryDir, "libdeps");
+            if (libDeps.exists()) return libDeps;
+        } catch (Exception ignored) {}
+        return new File(abiDir, "lib");
+    }
+    public File androidJar() {
+        // android.jar 不是可执行文件，从 asset 解压到 filesDir
+        File f = new File(ctx.getFilesDir(), "tools/android.jar");
+        if (!f.exists()) {
+            try {
+                f.getParentFile().mkdirs();
+                copyAsset(ctx.getAssets(), "tools/android.jar", f);
+            } catch (Exception ignored) {}
+        }
+        return f;
+    }
     public File dexDir() { return new File(ctx.getFilesDir(), "dex"); }
 }

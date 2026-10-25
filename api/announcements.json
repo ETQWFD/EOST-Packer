@@ -1,5 +1,12 @@
 [
   {
+    "id": 12,
+    "title": "v1.7.2 根治32位打包权限",
+    "version": "1.7.2",
+    "date": "2026-10-25",
+    "body": "· aapt2/zipalign 作为 .so 打包进 lib/<abi>/，安装时自动解压到 nativeLibraryDir，彻底告别 Permission denied\n· 路径显示友好名称（不再显示 content:// URI）\n· 32/64 位全支持"
+  },
+  {
     "id": 11,
     "title": "v1.7 修复32位打包+暗黑可读",
     "version": "1.7.0",
