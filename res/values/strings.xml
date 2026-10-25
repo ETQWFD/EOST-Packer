@@ -50,7 +50,7 @@
     <string name="check_update">检查更新</string>
     <string name="about">关于</string>
     <string name="developer">开发者：龙腾OS</string>
-    <string name="version">版本 1.2.0</string>
+    <string name="version">版本 1.3.0</string>
 
     <string name="progress_running">正在打包…</string>
     <string name="progress_done">打包完成</string>

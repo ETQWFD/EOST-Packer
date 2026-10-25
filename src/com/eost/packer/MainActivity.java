@@ -33,32 +33,42 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        prefs = new Prefs(this);
-        applyTheme();
-        setContentView(R.layout.main);
-
-        homeView = getLayoutInflater().inflate(R.layout.home_fragment, null);
-        packView = getLayoutInflater().inflate(R.layout.pack_fragment, null);
-        settingsView = getLayoutInflater().inflate(R.layout.settings_fragment, null);
-
-        homePage = new HomePage(this, homeView);
-        packPage = new PackPage(this, packView);
-        settingsPage = new SettingsPage(this, settingsView);
-
-        FrameLayout_replace(R.id.container, homeView);
-
-        tabHome = findViewById(R.id.tab_home);
-        tabPack = findViewById(R.id.tab_pack);
-        tabSettings = findViewById(R.id.tab_settings);
-        tabHome.setOnClickListener(this);
-        tabPack.setOnClickListener(this);
-        tabSettings.setOnClickListener(this);
-
-        requestPermissions();
         try {
-            startService(new Intent(this, PackService.class));
-        } catch (Throwable ignored) {
+            super.onCreate(savedInstanceState);
+            prefs = new Prefs(this);
+            applyTheme();
+            setContentView(R.layout.main);
+
+            homeView = getLayoutInflater().inflate(R.layout.home_fragment, null);
+            packView = getLayoutInflater().inflate(R.layout.pack_fragment, null);
+            settingsView = getLayoutInflater().inflate(R.layout.settings_fragment, null);
+
+            homePage = new HomePage(this, homeView);
+            packPage = new PackPage(this, packView);
+            settingsPage = new SettingsPage(this, settingsView);
+
+            FrameLayout_replace(R.id.container, homeView);
+
+            tabHome = findViewById(R.id.tab_home);
+            tabPack = findViewById(R.id.tab_pack);
+            tabSettings = findViewById(R.id.tab_settings);
+            tabHome.setOnClickListener(this);
+            tabPack.setOnClickListener(this);
+            tabSettings.setOnClickListener(this);
+
+            requestPermissions();
+            try {
+                startService(new Intent(this, PackService.class));
+            } catch (Throwable ignored) {
+            }
+        } catch (Throwable t) {
+            // 启动绝不闪退：任何异常记录到 etdo/crash.log 并给出提示
+            try {
+                android.widget.Toast.makeText(this,
+                        "启动异常已记录到 etdo/crash.log: " + t.getMessage(),
+                        android.widget.Toast.LENGTH_LONG).show();
+                com.eost.packer.util.CrashLog.save(this, t);
+            } catch (Throwable ignored) {}
         }
     }
 

@@ -3,71 +3,87 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EOST Packer · 龙腾OS</title>
+<title>EOST Packer 官网</title>
+<link rel="icon" href="favicon.ico">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f6f7f9;color:#1a1c1e;line-height:1.6}
-.wrap{max-width:880px;margin:0 auto;padding:24px}
-.hero{background:linear-gradient(135deg,#1f6feb,#7b3fe4);color:#fff;padding:56px 32px;border-radius:16px;margin-bottom:24px}
-.hero h1{font-size:32px;margin-bottom:8px}
-.hero p{opacity:.92;font-size:15px}
-.dl{display:inline-block;margin-top:20px;background:#fff;color:#1f6feb;padding:12px 28px;border-radius:999px;font-weight:600;text-decoration:none;font-size:15px}
-.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
-.card h2{font-size:18px;margin-bottom:12px}
-.ann{padding:12px 0;border-bottom:1px solid #eee}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#ffffff;color:#202124;line-height:1.7}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+.top{display:flex;align-items:center;gap:10px;padding:20px 0;border-bottom:1px solid #e8eaed}
+.top img{width:36px;height:36px}
+.top b{font-size:16px}
+.hero{padding:48px 0 24px}
+.hero h1{font-size:26px;margin-bottom:8px}
+.hero p{color:#5f6368;font-size:14px}
+.dl{display:inline-block;margin:20px 0 8px;background:#1a73e8;color:#fff;padding:10px 24px;text-decoration:none;font-size:14px}
+.dl:hover{background:#1765cc}
+.card{border:1px solid #e8eaed;padding:20px;margin:20px 0}
+.card h2{font-size:16px;margin-bottom:14px;border-bottom:1px solid #e8eaed;padding-bottom:8px}
+.ann{padding:12px 0;border-bottom:1px solid #f1f3f4}
 .ann:last-child{border-bottom:none}
-.ann .t{font-weight:600}
-.ann .d{font-size:12px;color:#888;margin:2px 0}
-.ann .b{font-size:14px;color:#444}
-.meta{display:flex;gap:24px;font-size:13px;color:#666;margin-top:16px}
-footer{text-align:center;color:#999;font-size:12px;padding:32px 0}
+.ann .t{font-weight:600;font-size:14px}
+.ann .d{font-size:12px;color:#80868b;margin:2px 0}
+.ann .b{font-size:13px;color:#3c4043;white-space:pre-line}
+.feats{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:#3c4043}
+.feats span{padding:4px 10px;background:#f1f3f4}
+.dlcnt{font-size:13px;color:#5f6368}
+footer{text-align:center;color:#9aa0a6;font-size:12px;padding:32px 0;border-top:1px solid #e8eaed;margin-top:24px}
+footer a{color:#5f6368;text-decoration:none}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="top">
+    <img src="icon.png" alt="EOST Packer">
+    <b>EOST Packer 官网</b>
+  </div>
+
   <div class="hero">
     <h1>EOST Packer</h1>
-    <p>在手机上一键打包安卓应用、自动签名、EOST 加固。支持 32 / 64 位 / x86 设备，安卓 15 风格界面。</p>
+    <p>安卓手机端应用打包与加固工具。内置 aapt2 / d8 / apksigner，支持 32 / 64 位 / x86 设备。</p>
     <a class="dl" id="dlbtn" href="#">下载最新版</a>
+    <div class="dlcnt">GitHub 官方统计下载总数：<b id="dlcnt">-</b></div>
   </div>
 
   <div class="card">
     <h2>公告</h2>
-    <div id="ann"><div class="ann"><div class="t">加载中…</div></div></div>
+    <div id="ann"><div class="ann"><div class="t">加载中</div></div></div>
   </div>
 
   <div class="card">
     <h2>功能</h2>
-    <div class="meta">
-      <span>✓ 真实打包（aapt2 / d8 / zipalign / apksigner）</span>
-      <span>✓ EOST 加固</span>
-      <span>✓ AI 帮助</span>
-      <span>✓ 多语言</span>
-      <span>✓ 暗黑模式</span>
+    <div class="feats">
+      <span>真实打包</span><span>EOST 加固</span><span>AI 帮助</span>
+      <span>权限管理</span><span>多语言</span><span>暗黑模式</span>
     </div>
   </div>
 
-  <div class="card">
-    <h2>下载统计</h2>
-    <p id="cnt">已下载 <b id="n">0</b> 次</p>
-  </div>
-
-  <footer>© 2026 龙腾OS · ET协会 · EOST Packer</footer>
+  <footer>
+    开发者：<b>龙腾OS</b> · ET协会<br>
+    <a href="https://github.com/ETQWFD/EOST-Packer">GitHub 仓库</a>
+  </footer>
 </div>
 <script>
-fetch('api/announcements.json').then(r=>r.json()).then(a=>{
-  document.getElementById('ann').innerHTML=a.map(x=>
-    `<div class="ann"><div class="t">${x.title} <small style="color:#888">(${x.version})</small></div>
-     <div class="d">${x.date}</div><div class="b">${x.body}</div></div>`).join('');
-}).catch(()=>{document.getElementById('ann').innerHTML='<div class="ann">暂无公告</div>'});
-fetch('api/latest.json').then(r=>r.json()).then(j=>{
-  document.getElementById('dlbtn').href=j.url;
-  document.getElementById('dlbtn').textContent='下载 '+j.version;
-});
-let n=parseInt(localStorage.getItem('eost_dl')||'0')+1;
-localStorage.setItem('eost_dl',n);
-fetch('api/counter.json').catch(()=>{});
-document.getElementById('n').textContent=n;
+var RELEASE_API='https://api.github.com/repos/ETQWFD/EOST-Packer/releases';
+var DL_BASE='https://github.com/ETQWFD/EOST-Packer/releases/download/';
+fetch(RELEASE_API).then(function(r){return r.json()}).then(function(list){
+  var total=0, latest=list[0]||{};
+  (list||[]).forEach(function(rel){
+    (rel.assets||[]).forEach(function(a){total+=a.download_count||0});
+  });
+  if(total>0) document.getElementById('dlcnt').textContent=total;
+  if(latest.tag_name){
+    var url=DL_BASE+latest.tag_name+'/EOST-Packer.apk';
+    document.getElementById('dlbtn').href=url;
+    document.getElementById('dlbtn').textContent='下载 '+latest.tag_name;
+  }
+}).catch(function(){});
+fetch('api/announcements.json').then(function(r){return r.json()}).then(function(a){
+  document.getElementById('ann').innerHTML=a.map(function(x){
+    return '<div class="ann"><div class="t">'+x.title+' <span style="color:#80868b;font-weight:400">('+x.version+')</span></div>'+
+      '<div class="d">'+x.date+'</div><div class="b">'+x.body+'</div></div>';
+  }).join('');
+}).catch(function(){document.getElementById('ann').innerHTML='<div class="ann">暂无公告</div>'});
 </script>
 </body>
 </html>

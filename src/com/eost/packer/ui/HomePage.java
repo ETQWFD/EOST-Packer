@@ -37,11 +37,12 @@ public class HomePage {
                 ui.post(() -> render(data));
             } catch (Exception e) {
                 ui.post(() -> {
-                    TextView t = new TextView(act);
-                    t.setText("网络暂时不可用，公告加载失败");
-                    t.setPadding(24, 24, 24, 24);
-                    t.setTextColor(0xFF5F6368);
                     list.removeAllViews();
+                    TextView t = new TextView(act);
+                    t.setText("公告加载失败，点击重试");
+                    t.setPadding(24, 24, 24, 24);
+                    t.setTextColor(0xFF1A73E8);
+                    t.setOnClickListener(v -> loadAnnouncements());
                     list.addView(t);
                 });
             }

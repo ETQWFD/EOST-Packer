@@ -102,19 +102,30 @@ public class SettingsPage {
             act.toast("正在检查更新…");
             new Thread(() -> {
                 try {
-                    String r = ApiClient.checkUpdate();
-                    String[] parts = r.split("\\|", 2);
-                    new Handler(Looper.getMainLooper()).post(() ->
+                    String cur = "";
+                    try {
+                        cur = act.getPackageManager()
+                                .getPackageInfo(act.getPackageName(), 0).versionName;
+                    } catch (Exception ignored) {}
+                    final String curVer = cur;
+                    String[] r = ApiClient.checkUpdate(curVer);
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        if (r == null) {
+                            act.toast("当前已是最新版本 " + curVer);
+                        } else {
                             new AlertDialog.Builder(act)
-                                    .setTitle("发现新版本 " + parts[0])
-                                    .setMessage("是否前往官网下载？")
+                                    .setTitle("发现新版本 " + r[0])
+                                    .setMessage("当前版本 " + curVer + "，是否前往官网下载？")
                                     .setPositiveButton("前往", (d, i) ->
                                             act.startActivity(new Intent(Intent.ACTION_VIEW,
-                                                    Uri.parse(parts[1]))))
+                                                    Uri.parse(r[1]))))
                                     .setNegativeButton("取消", null)
-                                    .show());
+                                    .show();
+                        }
+                    });
                 } catch (Exception e) {
-                    new Handler(Looper.getMainLooper()).post(() -> act.toast("已是最新版本"));
+                    new Handler(Looper.getMainLooper()).post(() ->
+                            act.toast("检查更新失败：网络不可用或服务器未响应"));
                 }
             }).start();
         });

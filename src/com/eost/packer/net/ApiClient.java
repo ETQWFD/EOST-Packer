@@ -32,10 +32,15 @@ public class ApiClient {
         return list;
     }
 
-    public static String checkUpdate() throws Exception {
+    /** 返回 [远程版本, 下载URL]；远程版本与当前相同时返回 null */
+    public static String[] checkUpdate(String currentVersion) throws Exception {
         String s = httpGet(BASE + "api/latest.json");
         JSONObject o = new JSONObject(s);
-        return o.optString("version") + "|" + o.optString("url");
+        String remote = o.optString("version");
+        String url = o.optString("url");
+        if (remote == null || remote.isEmpty()) return null;
+        if (remote.equalsIgnoreCase(currentVersion)) return null;
+        return new String[]{remote, url};
     }
 
     public static String aiChat(String endpoint, String key, String model, String prompt) throws Exception {
@@ -44,6 +49,9 @@ public class ApiClient {
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json");
         conn.setRequestProperty("Authorization", "Bearer " + key);
+        conn.setRequestProperty("User-Agent", "EOST-Packer/1.3");
+        conn.setConnectTimeout(30000);
+        conn.setReadTimeout(60000);
         conn.setDoOutput(true);
         JSONObject body = new JSONObject();
         body.put("model", model);
@@ -61,8 +69,9 @@ public class ApiClient {
     private static String httpGet(String url) throws Exception {
         HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
         c.setRequestMethod("GET");
-        c.setConnectTimeout(10000);
-        c.setReadTimeout(10000);
+        c.setRequestProperty("User-Agent", "EOST-Packer/1.3");
+        c.setConnectTimeout(15000);
+        c.setReadTimeout(15000);
         return readAll(c.getInputStream());
     }
 
