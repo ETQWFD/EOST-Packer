@@ -54,7 +54,27 @@ footer a{color:#5f6368;text-decoration:none}
     <h2>功能</h2>
     <div class="feats">
       <span>真实打包</span><span>EOST 加固</span><span>AI 帮助</span>
-      <span>权限管理</span><span>多语言</span><span>暗黑模式</span>
+      <span>权限管理</span><span>网页转APK</span><span>多语言</span><span>暗黑模式</span>
+    </div>
+
+    <h2>使用指南</h2>
+    <div style="text-align:left;font-size:14px;line-height:1.9;color:#5f6368">
+      <b style="color:#1a1c1e">1. 首页</b><br>
+      启动后自动从官网拉取最新公告；旧公告会被新公告顶下去，可随时下拉查看历史。<br><br>
+      <b style="color:#1a1c1e">2. 打包</b><br>
+      · 点「选择压缩包」选 zip 工程（必须是 zip），或「选择文件夹」选项目根目录（必须是目录）。<br>
+      · 选错会立即提示，不会污染路径。<br>
+      · 点「补全」自动扫描依赖：缺 Node.js/npm、Java、Python 会弹出下载窗口，点「自动下载」从清华镜像（失败回退官方）拉取 deb 包并解压。<br>
+      · 点「设置」弹窗：已添加/未添加权限双列表实时联动，可改版本号、包名（点击保存直接写回源码）。<br>
+      · 点「开始打包」期间锁定所有操作，完成后输出到 /storage/emulated/0/etdo/。<br><br>
+      <b style="color:#1a1c1e">3. 网页转 APK</b><br>
+      选含 index.html 的 zip/文件夹 → 点「开始生成 APK」，自动用内置 WebView 壳打包，输出 web-output.apk。<br><br>
+      <b style="color:#1a1c1e">4. 设置</b><br>
+      · AI 配置：填入 API 地址/Key/模型，保存后 AI 帮助才能用。<br>
+      · 主题：明亮/暗黑/跟随设备；可换背景图并一键重置。<br>
+      · 语言：简体中文 / English。<br>
+      · 检查更新：自动对比官网 latest.json，有新版本跳转下载。<br>
+      · 签名：可导入自己的 jks/keystore，选 V1/V2/V1+V2。默认使用内置 ETC 签名。
     </div>
   </div>
 
