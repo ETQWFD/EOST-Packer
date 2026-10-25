@@ -1,5 +1,5 @@
 {
-  "version": "1.5.0",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.5/EOST-Packer-v1.5.0.apk",
-  "notes": "路径类型校验、依赖自动检测下载（Node.js/npm/Java/Python，Termux官方仓库）"
+  "version": "1.6.0",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.6/EOST-Packer-v1.6.0.apk",
+  "notes": "权限双列表联动、包名/版本号编辑、暗黑模式真正生效、HTML转APK新Tab、依赖清华源、UI美化"
 }
