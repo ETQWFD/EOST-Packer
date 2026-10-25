@@ -38,7 +38,10 @@
 <string name="cancel">Cancel</string>
 <string name="close">Close</string>
 <string name="sign_title">Signing Scheme</string>
-<string name="sign_import">Import KeyStore</string>
+<string name="sign_import">Import KeyStore (jks/keystore)</string>
+<string name="sign_store_pass">KeyStore Password</string>
+<string name="sign_key_pass">Key Password</string>
+<string name="sign_alias">Alias</string>
 <string name="sign_v1">V1 only (JAR)</string>
 <string name="sign_v2">V2 only (APK)</string>
 <string name="sign_v1v2">V1 + V2</string>
@@ -60,7 +63,7 @@
 <string name="check_update">Check Update</string>
 <string name="about">About</string>
 <string name="developer">Developer: LongTengOS</string>
-<string name="version">Version 1.4.0</string>
+<string name="version">Version 1.4.1</string>
 <string name="progress_running">Packing…</string>
 <string name="progress_done">Done</string>
 <string name="progress_fail">Failed</string>

@@ -264,8 +264,6 @@ public class PackEngine {
             File outDir = new File(Environment.getExternalStorageDirectory(), "etdo");
             if (!outDir.exists()) outDir.mkdirs();
             log("[输出] 目录: " + outDir.getAbsolutePath());
-            File ks = new File(act.getFilesDir(), "tools/etckey.jks");
-            if (!ks.exists()) copyEtcKey(ks);
 
             try {
                 File work = new File(act.getCacheDir(), "work");
@@ -334,21 +332,41 @@ public class PackEngine {
                 log("    加固标记: assets/eost_guard.dat (dex_sha256="
                         + (apkDexHash.length() > 12 ? apkDexHash.substring(0, 12) : apkDexHash) + "…)");
 
-                log("[5/5] zipalign + ETC 签名 (v1+v2)…");
+                log("[5/5] zipalign + 签名 (v1+v2)…");
                 File aligned = new File(outDir, "aligned.apk");
                 run(tools.bin("zipalign"), "-f", "4", baseApk.getAbsolutePath(),
                         aligned.getAbsolutePath());
                 File signed = new File(outDir, "eost-output.apk");
                 if (signed.exists()) signed.delete();
+
+                String userKs = act.prefs().signPath();
+                boolean useUser = userKs != null && !userKs.isEmpty();
+                File ks = new File(act.getFilesDir(), "tools/etckey.jks");
+                if (useUser) {
+                    try {
+                        File uk = new File(act.getCacheDir(), "user_sign.jks");
+                        copyUriToFile(Uri.parse(userKs), uk);
+                        ks = uk;
+                    } catch (Exception e) {
+                        log("    读取用户签名失败: " + e.getMessage() + "，回退内置 ETC 签名");
+                        useUser = false;
+                    }
+                }
+                if (!ks.exists()) copyEtcKey(ks);
+                String storePass = useUser ? act.prefs().signStorePass() : "etc123";
+                String keyPass = useUser && !act.prefs().signKeyPass().isEmpty()
+                        ? act.prefs().signKeyPass() : storePass;
+                String alias = useUser ? act.prefs().signAlias() : "etc";
+
                 try {
-                    new SignerBridge(act, ks).sign(aligned, signed);
-                    log("    签名完成（内置 apksig，ETC 证书，v1+v2）");
+                    new SignerBridge(act, ks, storePass, keyPass, alias).sign(aligned, signed);
+                    log("    签名完成（内置 apksig" + (useUser ? "，用户证书" : "，ETC 证书") + "，v1+v2）");
                 } catch (Throwable se) {
                     log("    内置签名失败: " + se.getMessage());
                     log("    回退命令行 apksigner…");
                     run(tools.bin("apksigner"), "sign",
-                            "--ks", ks.getAbsolutePath(), "--ks-pass", "pass:etc123",
-                            "--ks-key-alias", "etc", "--key-pass", "pass:etc123",
+                            "--ks", ks.getAbsolutePath(), "--ks-pass", "pass:" + storePass,
+                            "--ks-key-alias", alias, "--key-pass", "pass:" + keyPass,
                             "--v1-signing-enabled", "true", "--v2-signing-enabled", "true",
                             "--out", signed.getAbsolutePath(), aligned.getAbsolutePath());
                 }
@@ -374,6 +392,15 @@ public class PackEngine {
             int r;
             while ((r = in.read(buf)) > 0) fo.write(buf, 0, r);
         } catch (Exception ignored) {}
+    }
+
+    private void copyUriToFile(Uri uri, File dest) throws Exception {
+        try (InputStream in = act.getContentResolver().openInputStream(uri);
+             FileOutputStream fo = new FileOutputStream(dest)) {
+            byte[] buf = new byte[8192];
+            int r;
+            while ((r = in.read(buf)) > 0) fo.write(buf, 0, r);
+        }
     }
 
     private File findDex(File project) {
@@ -449,8 +476,7 @@ public class PackEngine {
         try {
             if (p.startsWith("content://")) {
                 Uri uri = Uri.parse(p);
-                String mime = act.getContentResolver().getType(uri);
-                if (mime != null && mime.contains("zip")) {
+                if (isZipUri(uri)) {
                     return extractZipFromUri(uri);
                 }
                 return copyTreeFromUri(uri);
@@ -465,6 +491,27 @@ public class PackEngine {
             log("[错误] 读取项目失败: " + e.getMessage());
             return null;
         }
+    }
+
+    private boolean isZipUri(Uri uri) {
+        try {
+            String mime = act.getContentResolver().getType(uri);
+            if (mime != null && mime.contains("zip")) return true;
+        } catch (Exception ignored) {}
+        try {
+            android.database.Cursor c = act.getContentResolver().query(uri, null, null, null, null);
+            if (c != null) {
+                int idx = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
+                if (idx >= 0 && c.moveToFirst()) {
+                    String n = c.getString(idx);
+                    c.close();
+                    if (n != null && (n.endsWith(".zip") || n.endsWith(".apk"))) return true;
+                } else {
+                    c.close();
+                }
+            }
+        } catch (Exception ignored) {}
+        return false;
     }
 
     private File extractZipFromUri(Uri uri) throws Exception {
@@ -511,21 +558,24 @@ public class PackEngine {
     private File copyTreeFromUri(Uri uri) throws Exception {
         File work = new File(act.getCacheDir(), "tree_" + System.currentTimeMillis());
         work.mkdirs();
-        android.database.Cursor c = act.getContentResolver().query(uri, null, null, null, null);
-        if (c != null) {
-            String path = null;
-            while (c.moveToNext()) {
+        // 无论能否读到名称，都直接递归拷贝整棵 document tree
+        File direct = work;
+        try {
+            android.database.Cursor c = act.getContentResolver().query(uri, null, null, null, null);
+            if (c != null) {
                 int idx = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
-                if (idx >= 0) path = c.getString(idx);
+                if (idx >= 0 && c.moveToFirst()) {
+                    String nm = c.getString(idx);
+                    if (nm != null && !nm.isEmpty()) {
+                        File d = new File(work, nm);
+                        d.mkdirs();
+                        direct = d;
+                    }
+                }
+                c.close();
             }
-            c.close();
-            if (path != null) {
-                File direct = new File(work, path);
-                direct.mkdirs();
-                return copyDocumentTree(uri, direct);
-            }
-        }
-        return work;
+        } catch (Exception ignored) {}
+        return copyDocumentTree(uri, direct);
     }
 
     private File copyDocumentTree(Uri treeUri, File dest) throws Exception {

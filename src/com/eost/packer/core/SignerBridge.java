@@ -17,12 +17,20 @@ import java.util.List;
 public class SignerBridge {
     private final Context ctx;
     private final File ksFile;
-    private static final String KS_PASS = "etc123";
-    private static final String ALIAS = "etc";
+    private final String storePass;
+    private final String keyPass;
+    private final String alias;
 
     public SignerBridge(Context ctx, File ksFile) {
+        this(ctx, ksFile, "etc123", "etc123", "etc");
+    }
+
+    public SignerBridge(Context ctx, File ksFile, String storePass, String keyPass, String alias) {
         this.ctx = ctx;
         this.ksFile = ksFile;
+        this.storePass = storePass == null || storePass.isEmpty() ? "etc123" : storePass;
+        this.keyPass = keyPass == null || keyPass.isEmpty() ? this.storePass : keyPass;
+        this.alias = alias == null || alias.isEmpty() ? "etc" : alias;
     }
 
     /** 用内置 apksig 库执行 v1+v2 签名（无需外部 JVM） */
@@ -37,13 +45,13 @@ public class SignerBridge {
                 null,
                 getClass().getClassLoader());
 
-        // 读取 ETC keystore
+        // 读取 keystore（内置 ETC 或用户导入）
         KeyStore ks = KeyStore.getInstance("JKS");
         try (InputStream in = new FileInputStream(ksFile)) {
-            ks.load(in, KS_PASS.toCharArray());
+            ks.load(in, storePass.toCharArray());
         }
-        PrivateKey pk = (PrivateKey) ks.getKey(ALIAS, KS_PASS.toCharArray());
-        java.security.cert.Certificate[] chain = ks.getCertificateChain(ALIAS);
+        PrivateKey pk = (PrivateKey) ks.getKey(alias, keyPass.toCharArray());
+        java.security.cert.Certificate[] chain = ks.getCertificateChain(alias);
         List<X509Certificate> certs = new ArrayList<>();
         for (java.security.cert.Certificate c : chain) certs.add((X509Certificate) c);
 
@@ -51,7 +59,7 @@ public class SignerBridge {
         Class<?> signerClass = cl.loadClass("com.android.apksig.ApkSigner$Signer");
         Class<?> signerBuilderClass = cl.loadClass("com.android.apksig.ApkSigner$Signer$Builder");
         Constructor<?> sbCtor = signerBuilderClass.getConstructor(String.class, PrivateKey.class, List.class);
-        Object signerBuilder = sbCtor.newInstance(ALIAS, pk, certs);
+        Object signerBuilder = sbCtor.newInstance(alias, pk, certs);
         Method buildMethod = signerBuilderClass.getMethod("build");
         Object signer = buildMethod.invoke(signerBuilder);
 

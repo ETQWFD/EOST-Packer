@@ -42,4 +42,11 @@ public class Prefs {
 
     public String bgPath() { return get("bg_path", ""); }
     public void setBgPath(String p) { set("bg_path", p); }
+
+    public String signStorePass() { return get("sign_store_pass", ""); }
+    public void setSignStorePass(String p) { set("sign_store_pass", p); }
+    public String signKeyPass() { return get("sign_key_pass", ""); }
+    public void setSignKeyPass(String p) { set("sign_key_pass", p); }
+    public String signAlias() { return get("sign_alias", ""); }
+    public void setSignAlias(String p) { set("sign_alias", p); }
 }

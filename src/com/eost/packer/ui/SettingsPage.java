@@ -64,19 +64,52 @@ public class SettingsPage {
 
     private void bindSign() {
         root.findViewById(R.id.row_sign).setOnClickListener(v -> {
-            int cur = act.prefs().signMode();
-            String[] items = {str(R.string.sign_v1), str(R.string.sign_v2), str(R.string.sign_v1v2)};
+            String[] items = {str(R.string.sign_v1), str(R.string.sign_v2),
+                    str(R.string.sign_v1v2), str(R.string.sign_import)};
             new AlertDialog.Builder(act)
                     .setTitle(R.string.sign_title)
-                    .setSingleChoiceItems(items, cur - 1, (d, i) -> {
-                        act.prefs().setSignMode(i + 1);
-                        d.dismiss();
-                        act.toast("签名方案已保存: " + items[i]);
+                    .setItems(items, (d, i) -> {
+                        if (i < 3) {
+                            act.prefs().setSignMode(i + 1);
+                            d.dismiss();
+                            act.toast("签名方案已保存: " + items[i]);
+                        } else {
+                            d.dismiss();
+                            Intent it = new Intent(Intent.ACTION_GET_CONTENT);
+                            it.setType("*/*");
+                            act.startActivityForResult(Intent.createChooser(it,
+                                    "选择签名文件 (.jks / .keystore)"), 2001);
+                        }
                         refreshVals();
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
         });
+    }
+
+    /** 选择签名文件后弹出密码/别名输入 */
+    public void onSignPicked(Uri uri) {
+        if (uri == null) return;
+        View box = LayoutInflater.from(act).inflate(R.layout.dialog_sign, null);
+        final EditText sp = box.findViewById(R.id.sign_store_pass);
+        final EditText kp = box.findViewById(R.id.sign_key_pass);
+        final EditText al = box.findViewById(R.id.sign_alias);
+        new AlertDialog.Builder(act)
+                .setView(box)
+                .setTitle(R.string.sign_import)
+                .setPositiveButton(R.string.save, (d, i) -> {
+                    if (sp.getText().toString().trim().isEmpty()) {
+                        act.toast("KeyStore 密码不能为空");
+                        return;
+                    }
+                    act.prefs().setSignPath(uri.toString());
+                    act.prefs().setSignStorePass(sp.getText().toString().trim());
+                    act.prefs().setSignKeyPass(kp.getText().toString().trim());
+                    act.prefs().setSignAlias(al.getText().toString().trim());
+                    act.toast("签名文件已导入并保存，打包时将使用该证书");
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     private void bindTheme() {

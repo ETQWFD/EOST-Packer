@@ -44,7 +44,10 @@
     <string name="close">关闭</string>
 
     <string name="sign_title">签名方案</string>
-    <string name="sign_import">导入签名文件</string>
+    <string name="sign_import">导入签名文件（jks/keystore）</string>
+    <string name="sign_store_pass">KeyStore 密码</string>
+    <string name="sign_key_pass">Key 密码</string>
+    <string name="sign_alias">别名 (alias)</string>
     <string name="sign_v1">仅 V1 (JAR)</string>
     <string name="sign_v2">仅 V2 (APK)</string>
     <string name="sign_v1v2">V1 + V2</string>
@@ -69,7 +72,7 @@
     <string name="check_update">检查更新</string>
     <string name="about">关于</string>
     <string name="developer">开发者：龙腾OS</string>
-    <string name="version">版本 1.4.0</string>
+    <string name="version">版本 1.4.1</string>
 
     <string name="progress_running">正在打包…</string>
     <string name="progress_done">打包完成</string>

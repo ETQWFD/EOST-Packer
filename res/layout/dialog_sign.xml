@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:padding="18dp">
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/sign_store_pass" android:textSize="12sp"
+        android:textColor="#FF5F6368"/>
+    <EditText android:id="@+id/sign_store_pass" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="storepass"
+        android:background="@drawable/input_bg" android:padding="10dp"
+        android:inputType="textPassword" android:layout_marginTop="4dp"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/sign_key_pass" android:textSize="12sp"
+        android:textColor="#FF5F6368" android:layout_marginTop="10dp"/>
+    <EditText android:id="@+id/sign_key_pass" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="keypass（可留空，默认同 storepass）"
+        android:background="@drawable/input_bg" android:padding="10dp"
+        android:inputType="textPassword" android:layout_marginTop="4dp"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/sign_alias" android:textSize="12sp"
+        android:textColor="#FF5F6368" android:layout_marginTop="10dp"/>
+    <EditText android:id="@+id/sign_alias" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="alias"
+        android:background="@drawable/input_bg" android:padding="10dp"
+        android:layout_marginTop="4dp"/>
+</LinearLayout>

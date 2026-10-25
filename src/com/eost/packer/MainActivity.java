@@ -192,8 +192,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onActivityResult(req, res, data);
         if (packPage != null) packPage.onActivityResult(req, res, data);
         if (req == 2001 && data != null && data.getData() != null) {
-            prefs.setSignPath(data.getData().toString());
-            toast("签名文件已导入");
+            if (settingsPage != null) settingsPage.onSignPicked(data.getData());
         }
         if (req == 3001) {
             Uri u = data == null ? null : data.getData();

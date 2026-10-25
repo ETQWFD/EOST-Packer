@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.4/EOST-Packer-v1.4.0.apk",
-  "notes": "设置页列表化、权限中文双列表真实读写源码、版本号扫描编辑、主题背景/颜色切换、AI配置保存、语言真正切换"
+  "version": "1.4.1",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.4.1/EOST-Packer-v1.4.1.apk",
+  "notes": "修复文件夹读取Unsupported Uri、zip识别、补全、签名文件导入（jks/keystore+密码别名）"
 }
