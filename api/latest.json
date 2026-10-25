@@ -1,5 +1,5 @@
 {
-  "version": "1.7.1",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.1/EOST-Packer-v1.7.1.apk",
-  "notes": "修复暗黑模式按钮文字看不清、背景图被覆盖、32位aapt2权限"
+  "version": "1.7.2",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.2/EOST-Packer-v1.7.2.apk",
+  "notes": "工具解压到外部Android/data目录(SELinux可执行)、路径显示友好名称不再显示content:// URI"
 }

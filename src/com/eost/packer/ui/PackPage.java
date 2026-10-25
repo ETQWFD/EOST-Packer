@@ -108,13 +108,14 @@ public class PackPage {
 
         String saved = act.prefs().projectPath();
         if (saved != null && !saved.isEmpty()) {
-            // 启动时校验已保存路径：必须是 zip 或目录 tree，否则清空避免报错
+            // 启动时校验已保存路径：必须是 zip 或目录 tree，否则清空
             boolean ok = saved.contains("/tree/");
             if (!ok) {
                 String low = saved.toLowerCase();
                 ok = low.contains(".zip") || low.contains(".apk");
             }
-            if (ok) tvPath.setText(saved);
+            // 不回显 URI，只显示友好提示（用户重新选择后会更新）
+            if (ok) tvPath.setText(R.string.project_path);
             else {
                 act.prefs().setProjectPath("");
                 tvPath.setText(R.string.project_path);
@@ -152,7 +153,27 @@ public class PackPage {
         }
         String path = uri.toString();
         act.prefs().setProjectPath(path);
-        tvPath.setText(path);
+        // 显示友好名称而不是 content:// URI
+        String name = friendlyName(uri, req);
+        tvPath.setText(name);
+    }
+
+    private String friendlyName(Uri uri, int req) {
+        if (req == REQ_FOLDER) return "已选择文件夹 ✓";
+        // zip：取文件名
+        try {
+            android.database.Cursor c = act.getContentResolver().query(uri, null, null, null, null);
+            if (c != null) {
+                int idx = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
+                if (idx >= 0 && c.moveToFirst()) {
+                    String n = c.getString(idx);
+                    c.close();
+                    return "已选择压缩包: " + n;
+                }
+                c.close();
+            }
+        } catch (Exception ignored) {}
+        return "已选择压缩包 ✓";
     }
 
     private boolean isZipUri(Uri uri) {

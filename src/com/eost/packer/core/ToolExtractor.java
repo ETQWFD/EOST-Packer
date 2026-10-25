@@ -17,7 +17,9 @@ public class ToolExtractor {
 
     public ToolExtractor(Context ctx) {
         this.ctx = ctx;
-        this.baseDir = new File(ctx.getFilesDir(), "tools");
+        // 解压到外部 app 私有目录（SELinux exec 限制更少）
+        File ext = ctx.getExternalFilesDir(null);
+        this.baseDir = new File(ext != null ? ext : ctx.getFilesDir(), "tools");
         if (!baseDir.exists()) baseDir.mkdirs();
         this.abi = pickAbi();
         this.abiDir = new File(baseDir, abi);

@@ -42,8 +42,8 @@ public class WebPage {
         if (uri == null) return;
         String path = uri.toString();
         if (req == REQ_FOLDER && !path.contains("/tree/")) { ((com.eost.packer.MainActivity) act).toast("请选择文件夹"); return; }
-        tvPath.setText(path);
         ((com.eost.packer.MainActivity) act).prefs().setWebPath(path);
+        tvPath.setText(req == REQ_FOLDER ? "已选择文件夹 ✓" : "已选择压缩包 ✓");
     }
 
     public void log(String s) {
