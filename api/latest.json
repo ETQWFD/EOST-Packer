@@ -1,5 +1,5 @@
 {
   "version": "1.3.0",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.3/EOST-Packer.apk",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.3/EOST-Packer-v1.3.apk",
   "notes": "真实ARM打包工具链、内置apksig签名、EOST Guard加固、完整图标、官网重构"
 }

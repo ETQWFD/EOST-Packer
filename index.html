@@ -76,7 +76,9 @@ function apply(list){
   });
   if(total>0) document.getElementById('dlcnt').textContent=total;
   if(latest.tag_name){
-    var url=DL_BASE+latest.tag_name+'/EOST-Packer.apk';
+    var url=null;
+    if(latest.assets&&latest.assets.length){url=latest.assets[0].browser_download_url;}
+    else{url=DL_BASE+latest.tag_name+'/EOST-Packer.apk';}
     document.getElementById('dlbtn').href=url;
     document.getElementById('dlbtn').textContent='下载 '+latest.tag_name;
   }
