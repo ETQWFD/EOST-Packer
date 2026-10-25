@@ -31,10 +31,8 @@
                 android:text="@string/btn_fix"/>
             <Button android:id="@+id/btn_ai" style="@style/Btn"
                 android:text="@string/btn_ai"/>
-            <Button android:id="@+id/btn_pack" style="@style/Btn"
-                android:text="@string/btn_pack"
-                android:backgroundTint="@color/primary"
-                android:textColor="#FFFFFF"/>
+            <Button android:id="@+id/btn_pack" style="@style/BtnPrimary"
+                android:text="@string/btn_pack"/>
         </LinearLayout>
 
         <LinearLayout style="@style/Card" android:orientation="vertical">
