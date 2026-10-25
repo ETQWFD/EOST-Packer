@@ -90,10 +90,10 @@ function saveToken(){
   showMsg('ann_msg','Token 已保存（仅本浏览器）','ok');
 }
 function loadDl(){
-  fetch('https://api.github.com/repos/'+REPO+'/releases').then(function(r){return r.json()}).then(function(list){
+  fetch('https://api.github.com/repos/'+REPO+'/releases').then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(list){
     var total=0;(list||[]).forEach(function(rel){(rel.assets||[]).forEach(function(a){total+=a.download_count||0})});
     document.getElementById('dl').textContent=total;
-  }).catch(function(){document.getElementById('dl').textContent='获取失败'});
+  }).catch(function(){document.getElementById('dl').textContent='读取失败（API 限流，稍后再试）'});
 }
 function loadAnn(){
   fetch(RAW).then(function(r){return r.json()}).then(function(a){

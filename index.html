@@ -66,7 +66,10 @@ footer a{color:#5f6368;text-decoration:none}
 <script>
 var RELEASE_API='https://api.github.com/repos/ETQWFD/EOST-Packer/releases';
 var DL_BASE='https://github.com/ETQWFD/EOST-Packer/releases/download/';
-fetch(RELEASE_API).then(function(r){return r.json()}).then(function(list){
+var cached=sessionStorage.getItem('eost_dl_data');
+var list;
+try{list=cached?JSON.parse(cached):null}catch(e){list=null}
+function apply(list){
   var total=0, latest=list[0]||{};
   (list||[]).forEach(function(rel){
     (rel.assets||[]).forEach(function(a){total+=a.download_count||0});
@@ -77,7 +80,13 @@ fetch(RELEASE_API).then(function(r){return r.json()}).then(function(list){
     document.getElementById('dlbtn').href=url;
     document.getElementById('dlbtn').textContent='下载 '+latest.tag_name;
   }
-}).catch(function(){});
+}
+if(list){apply(list);}else{
+fetch(RELEASE_API).then(function(r){if(!r.ok)throw new Error(r.status);return r.json()}).then(function(j){
+  sessionStorage.setItem('eost_dl_data',JSON.stringify(j));
+  apply(j);
+}).catch(function(){document.getElementById('dlcnt').innerHTML='<a href="https://github.com/ETQWFD/EOST-Packer/releases" style="color:#1a73e8">前往 GitHub 查看下载</a>';});
+}
 fetch('api/announcements.json').then(function(r){return r.json()}).then(function(a){
   document.getElementById('ann').innerHTML=a.map(function(x){
     return '<div class="ann"><div class="t">'+x.title+' <span style="color:#80868b;font-weight:400">('+x.version+')</span></div>'+
