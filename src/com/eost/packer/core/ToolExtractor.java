@@ -60,6 +60,8 @@ public class ToolExtractor {
                 copyDir(am, "tools/" + n, target);
             }
         }
+        // 强制 chmod 755 所有 bin 下二进制（SELinux 兼容）
+        chmodBin(new File(baseDir, abi + "/bin"));
         File dexDir = new File(ctx.getFilesDir(), "dex");
         dexDir.mkdirs();
         String[] dexes;
@@ -71,6 +73,23 @@ public class ToolExtractor {
             File f = new File(dexDir, d);
             if (f.exists() && f.length() > 0) continue;
             copyAsset(am, "dex/" + d, f);
+        }
+    }
+
+    private void chmodBin(File dir) {
+        if (dir == null || !dir.isDirectory()) return;
+        File[] fs = dir.listFiles();
+        if (fs == null) return;
+        for (File f : fs) {
+            if (f.isDirectory()) { chmodBin(f); continue; }
+            try {
+                f.setExecutable(true, false);
+                f.setReadable(true, false);
+                f.setWritable(true);
+                // 兜底：用 chmod 命令
+                Runtime.getRuntime().exec(new String[]{"chmod", "755", f.getAbsolutePath()})
+                        .waitFor();
+            } catch (Exception ignored) {}
         }
     }
 

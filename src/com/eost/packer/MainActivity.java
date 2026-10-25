@@ -139,37 +139,43 @@ public class MainActivity extends Activity implements View.OnClickListener {
             View root = ((ViewGroup) getWindow().getDecorView()).getChildAt(0);
             if (root == null) return;
             root.setBackgroundColor(pageBg);
-            applyNode(root, dark, pageBg, cardBg, textP, textS);
+            applyNode(root, dark, pageBg, cardBg, textP, textS, 0);
         } catch (Throwable ignored) {}
     }
 
-    private void applyNode(View v, boolean dark, int pageBg, int cardBg, int textP, int textS) {
+    private void applyNode(View v, boolean dark, int pageBg, int cardBg, int textP, int textS, int depth) {
+        // tabbar 保持白底
+        if (v.getId() == R.id.tabbar) {
+            v.setBackgroundColor(0xFFFFFFFF);
+            return;
+        }
+        // 容器（ScrollView/外层 LinearLayout）背景
         if (v instanceof ScrollView) {
             v.setBackgroundColor(pageBg);
-        } else if (v instanceof android.widget.LinearLayout && !(v instanceof android.widget.Button)) {
-            if (v.getParent() instanceof ViewGroup) {
-                ViewGroup gp = (ViewGroup) v.getParent();
-                if (gp.getId() == R.id.container || gp instanceof ScrollView) {
-                    v.setBackgroundColor(cardBg);
-                }
-            }
+        } else if (v instanceof android.widget.LinearLayout && !(v instanceof android.widget.Button)
+                && v.getId() != R.id.container && v.getId() != R.id.tabbar) {
+            // 卡片式 LinearLayout：统一卡片色
+            v.setBackgroundColor(cardBg);
         }
+        // 所有 TextView：dark 下强制浅色，亮下强制深色（主题蓝除外）
         if (v instanceof TextView) {
             TextView t = (TextView) v;
             int c = t.getCurrentTextColor();
-            if (c == prefs.accent()) return; // 主题色不动
-            if (dark) {
-                // 深色模式下：原本深的字 → 浅；原本浅的（已变）保持
-                if (c == 0xFF1A1C1E || c == 0xFF202124 || c == 0xFF000000) t.setTextColor(textP);
-                else if (c == 0xFF5F6368) t.setTextColor(textS);
+            if (c == prefs.accent() || c == 0xFF1F6FEB || c == 0xFF188038) {
+                // 主题色/绿色（权限库文字）保持
             } else {
-                // 亮色模式下：原本浅的字 → 深
-                if (c == 0xFFE8EAED || c == 0xFFFFFFFF || c == 0xFF9AA0A6) t.setTextColor(textP);
+                // 副标题类灰色（5F6368 等）用 textS，其余用 textP
+                if (dark) {
+                    if (c == 0xFF5F6368 || c == 0xFF80868B || c == 0xFF9AA0A6) t.setTextColor(textS);
+                    else t.setTextColor(textP);
+                } else {
+                    if (c == 0xFF9AA0A6 || c == 0xFFE8EAED || c == 0xFFFFFFFF) t.setTextColor(textP);
+                }
             }
         }
         if (v instanceof ViewGroup) {
             ViewGroup g = (ViewGroup) v;
-            for (int i = 0; i < g.getChildCount(); i++) applyNode(g.getChildAt(i), dark, pageBg, cardBg, textP, textS);
+            for (int i = 0; i < g.getChildCount(); i++) applyNode(g.getChildAt(i), dark, pageBg, cardBg, textP, textS, depth + 1);
         }
     }
 
