@@ -107,7 +107,19 @@ public class PackPage {
         btnPack.setOnClickListener(v -> engine.startPack());
 
         String saved = act.prefs().projectPath();
-        if (saved != null && !saved.isEmpty()) tvPath.setText(saved);
+        if (saved != null && !saved.isEmpty()) {
+            // 启动时校验已保存路径：必须是 zip 或目录 tree，否则清空避免报错
+            boolean ok = saved.contains("/tree/");
+            if (!ok) {
+                String low = saved.toLowerCase();
+                ok = low.contains(".zip") || low.contains(".apk");
+            }
+            if (ok) tvPath.setText(saved);
+            else {
+                act.prefs().setProjectPath("");
+                tvPath.setText(R.string.project_path);
+            }
+        }
     }
 
     private void chooseZip() {
@@ -171,91 +183,77 @@ public class PackPage {
     private void showSettings() {
         View box = LayoutInflater.from(act).inflate(R.layout.dialog_perms, null);
         final EditText verEdit = box.findViewById(R.id.ver_edit);
+        final EditText pkgEdit = box.findViewById(R.id.pkg_edit);
         final ListView lvHas = box.findViewById(R.id.lv_has);
         final ListView lvAll = box.findViewById(R.id.lv_all);
 
-        final List<String> has = new ArrayList<>();
+        final List<String> hasKeys = new ArrayList<>();
         final ArrayAdapter<String> hasAdp = new ArrayAdapter<String>(act,
-                android.R.layout.simple_list_item_1, has) {
+                android.R.layout.simple_list_item_1, hasKeys) {
             @Override
             public View getView(int pos, View cv, ViewGroup p) {
                 TextView t = (TextView) super.getView(pos, cv, p);
-                t.setTextColor(0xFF1A1C1E);
-                t.setTextSize(13);
+                t.setTextColor(0xFF1A1C1E); t.setTextSize(13);
                 return t;
             }
         };
         lvHas.setAdapter(hasAdp);
 
-        final List<String> all = new ArrayList<>();
-        for (String[] p : PERM_LIB) all.add(p[1]);
+        final List<String> allKeys = new ArrayList<>();
         final ArrayAdapter<String> allAdp = new ArrayAdapter<String>(act,
-                android.R.layout.simple_list_item_1, all) {
+                android.R.layout.simple_list_item_1, allKeys) {
             @Override
             public View getView(int pos, View cv, ViewGroup p) {
                 TextView t = (TextView) super.getView(pos, cv, p);
-                t.setTextColor(0xFF1A1C1E);
-                t.setTextSize(13);
+                t.setTextColor(0xFF1A1C1E); t.setTextSize(13);
                 return t;
             }
         };
         lvAll.setAdapter(allAdp);
 
-        // 异步扫描源码中的权限与版本号
+        // 双向同步：根据 hasKeys 刷新两个列表
+        final Runnable syncLists = () -> {
+            hasAdp.clear(); allAdp.clear();
+            for (String k : PERM_LIB_KEYS) {
+                if (hasKeys.contains(k)) hasAdp.add(labelOf(k) + "  [" + k + "]");
+                else allAdp.add(labelOf(k) + "  [" + k + "]");
+            }
+            for (String k : hasKeys) {
+                if (!listContains(PERM_LIB_KEYS, k)) hasAdp.add(k);
+            }
+            hasAdp.notifyDataSetChanged(); allAdp.notifyDataSetChanged();
+        };
+
+        // 异步扫描源码中的权限/版本/包名
         new Thread(() -> {
             final List<String> scanned = engine.scanPermissions();
             final String ver = engine.readVersion();
+            final String pkg = engine.readPackageName();
             ui.post(() -> {
-                has.clear();
-                for (String s : scanned) {
-                    for (String[] p : PERM_LIB) {
-                        if (p[0].equals(s)) { has.add(p[1] + "（" + p[0] + "）"); break; }
-                    }
-                    if (has.size() < scanned.size()) {
-                        boolean found = false;
-                        for (String[] p : PERM_LIB) {
-                            if (p[0].equals(s)) { found = true; break; }
-                        }
-                        if (!found) has.add(s);
-                    }
-                }
-                hasAdp.notifyDataSetChanged();
+                hasKeys.clear(); hasKeys.addAll(scanned);
+                syncLists.run();
                 verEdit.setText(ver);
+                pkgEdit.setText(pkg);
             });
         }).start();
 
-        // 已添加列表：点击删除（真实修改源码）
+        // 已添加：点击删除 → 回到未添加列表
         lvHas.setOnItemClickListener((p, v, pos, id) -> {
-            String raw = has.get(pos);
-            String key = raw;
-            int lb = raw.indexOf('（');
-            if (lb > 0) key = raw.substring(lb + 1, raw.indexOf('）'));
-            final String fk = key;
-            has.remove(pos);
-            hasAdp.notifyDataSetChanged();
-            new Thread(() -> engine.removePermissionFromSource(fk)).start();
-            act.toast("已从源码移除: " + fk);
+            String key = extractKey((String) hasAdp.getItem(pos));
+            hasKeys.remove(key);
+            new Thread(() -> engine.removePermissionFromSource(key)).start();
+            act.toast("已从源码移除: " + key);
+            syncLists.run();
         });
 
-        // 权限库：点击添加（真实写入源码）
+        // 未添加：点击添加 → 从未添加消失进入已添加
         lvAll.setOnItemClickListener((p, v, pos, id) -> {
-            String cn = all.get(pos);
-            String key = null;
-            for (String[] pe : PERM_LIB) {
-                if (pe[1].equals(cn)) { key = pe[0]; break; }
-            }
-            if (key == null) return;
-            final String fk2 = key;
-            for (int i = 0; i < has.size(); i++) {
-                if (has.get(i).startsWith(cn)) {
-                    act.toast("该权限已添加");
-                    return;
-                }
-            }
-            has.add(cn + "（" + fk2 + "）");
-            hasAdp.notifyDataSetChanged();
-            new Thread(() -> engine.addPermissionToSource(fk2)).start();
-            act.toast("已写入源码: " + fk2);
+            String key = extractKey((String) allAdp.getItem(pos));
+            if (hasKeys.contains(key)) return;
+            hasKeys.add(key);
+            new Thread(() -> engine.addPermissionToSource(key)).start();
+            act.toast("已写入源码: " + key);
+            syncLists.run();
         });
 
         box.findViewById(R.id.btn_ver_save).setOnClickListener(v -> {
@@ -264,11 +262,37 @@ public class PackPage {
             new Thread(() -> engine.writeVersion(nv)).start();
             act.toast("版本号已保存: " + nv);
         });
+        box.findViewById(R.id.btn_pkg_save).setOnClickListener(v -> {
+            String nv = pkgEdit.getText().toString().trim();
+            if (nv.isEmpty()) { act.toast("包名不能为空"); return; }
+            if (!nv.matches("[a-zA-Z][a-zA-Z0-9_\\.]*")) { act.toast("包名格式不正确"); return; }
+            new Thread(() -> engine.writePackageName(nv)).start();
+            act.toast("包名已保存: " + nv);
+        });
 
         new AlertDialog.Builder(act)
                 .setView(box)
                 .setPositiveButton(R.string.close, null)
                 .show();
+    }
+
+    private static boolean listContains(String[] arr, String v) {
+        for (String s : arr) if (s.equals(v)) return true;
+        return false;
+    }
+    private static String labelOf(String key) {
+        for (String[] p : PERM_LIB) if (p[0].equals(key)) return p[1];
+        return key;
+    }
+    private static String extractKey(String item) {
+        int lb = item.lastIndexOf('[');
+        if (lb >= 0 && item.endsWith("]")) return item.substring(lb + 1, item.length() - 1);
+        return item.trim();
+    }
+    private static final String[] PERM_LIB_KEYS;
+    static {
+        PERM_LIB_KEYS = new String[PERM_LIB.length];
+        for (int i = 0; i < PERM_LIB.length; i++) PERM_LIB_KEYS[i] = PERM_LIB[i][0];
     }
 
     /** 依赖缺失时弹出的下载窗口 */

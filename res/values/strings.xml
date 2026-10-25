@@ -3,6 +3,7 @@
     <string name="app_name">EOST Packer</string>
     <string name="nav_home">首页</string>
     <string name="nav_pack">打包</string>
+    <string name="nav_web">网页转APK</string>
     <string name="nav_settings">设置</string>
 
     <string name="welcome">欢迎使用 EOST Packer</string>
@@ -27,6 +28,7 @@
     <string name="perm_add">添加</string>
     <string name="perm_delete">删除</string>
     <string name="ver_title">项目版本号</string>
+    <string name="pkg_title">包名</string>
     <string name="btn_ver_save">保存</string>
 
     <string name="settings_group_ai">通用</string>
@@ -72,7 +74,13 @@
     <string name="check_update">检查更新</string>
     <string name="about">关于</string>
     <string name="developer">开发者：龙腾OS</string>
-    <string name="version">版本 1.5.0</string>
+    <string name="version">版本 1.6.0</string>
+
+    <string name="web_hint">请选择含 index.html 的项目（zip 压缩包或文件夹）</string>
+    <string name="web_title">网页转 APK（WebView 壳）</string>
+    <string name="web_pack">开始生成 APK</string>
+    <string name="web_no_index">未检测到 index.html，请确认根目录包含 index.html</string>
+    <string name="guide_title">使用指南</string>
 
     <string name="progress_running">正在打包…</string>
     <string name="progress_done">打包完成</string>

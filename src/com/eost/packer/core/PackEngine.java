@@ -132,6 +132,49 @@ public class PackEngine {
         } catch (Exception e) { return ""; }
     }
 
+    /** 读取 manifest 根标签 package="..." */
+    public String readPackageName() {
+        try {
+            File project = resolveProject();
+            if (project == null) return "";
+            File manifest = new File(project, "AndroidManifest.xml");
+            if (!manifest.exists()) return "";
+            String s = new String(readAll(manifest), StandardCharsets.UTF_8);
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("<manifest[^>]*\\bpackage=\"([^\"]*)\"").matcher(s);
+            return m.find() ? m.group(1) : "";
+        } catch (Exception e) { return ""; }
+    }
+
+    /** 写入 manifest 根标签 package="..." */
+    public void writePackageName(String pkg) {
+        try {
+            File project = resolveProject();
+            if (project == null) { log("[包名] 请先选择项目根目录"); return; }
+            File manifest = new File(project, "AndroidManifest.xml");
+            if (!manifest.exists()) { log("[包名] 未找到 AndroidManifest.xml"); return; }
+            String s = new String(readAll(manifest), StandardCharsets.UTF_8);
+            String v = pkg == null ? "" : pkg.trim();
+            if (v.isEmpty()) { log("[包名] 包名不能为空"); return; }
+            String replaced = s.replaceFirst("(<manifest[^>]*\\bpackage=\")[^\"]*(\")", "$1" + v + "$2");
+            if (replaced.equals(s)) {
+                // 无 package 属性，插到 manifest 标签开头
+                java.util.regex.Matcher m = java.util.regex.Pattern
+                        .compile("(<manifest)([^>]*>)").matcher(s);
+                if (m.find()) {
+                    replaced = s.substring(0, m.start()) + "<manifest package=\"" + v + "\"" + s.substring(m.end(2) - 1);
+                } else {
+                    log("[包名] manifest 结构异常");
+                    return;
+                }
+            }
+            writeAll(manifest, replaced);
+            log("[包名] 已写入: " + v);
+        } catch (Exception e) {
+            log("[包名] 写入失败: " + e.getMessage());
+        }
+    }
+
     /** 写入 AndroidManifest.xml 的 versionName */
     public void writeVersion(String v) {
         try {

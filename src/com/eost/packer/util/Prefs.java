@@ -40,6 +40,9 @@ public class Prefs {
     public String projectPath() { return get("project_path", ""); }
     public void setProjectPath(String p) { set("project_path", p); }
 
+    public String webPath() { return get("web_path", ""); }
+    public void setWebPath(String p) { set("web_path", p); }
+
     public String bgPath() { return get("bg_path", ""); }
     public void setBgPath(String p) { set("bg_path", p); }
 

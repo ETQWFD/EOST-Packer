@@ -33,10 +33,17 @@ public class DependencyManager {
     }
 
     private final Context ctx;
-    private static final String REPO =
+    // 清华源（首选）→ 官方源（自动回退）
+    private static final String REPO_PRIMARY =
+            "https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-main/dists/stable/main/binary-%s/Packages.gz";
+    private static final String REPO_FALLBACK =
             "https://packages.termux.dev/apt/termux-main/dists/stable/main/binary-%s/Packages.gz";
-    private static final String POOL =
+    private static final String POOL_PRIMARY =
+            "https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-main/";
+    private static final String POOL_FALLBACK =
             "https://packages.termux.dev/apt/termux-main/";
+    private String repoBase = "";
+    private String repoPool = "";
     private final String arch; // aarch64 / arm
     private Map<String, Map<String, String>> index;
 
@@ -87,17 +94,30 @@ public class DependencyManager {
         return new File(ctx.getFilesDir(), "tools/run/" + key);
     }
 
-    /** 加载包索引 */
+    /** 加载包索引（清华优先，失败回退官方） */
     private void ensureIndex() throws Exception {
         if (index != null) return;
         index = new HashMap<>();
-        URL u = new URL(String.format(REPO, arch));
-        HttpURLConnection c = (HttpURLConnection) u.openConnection();
-        c.setRequestMethod("GET");
-        c.setRequestProperty("User-Agent", "EOST-Packer/1.5");
-        c.setConnectTimeout(20000);
-        c.setReadTimeout(60000);
-        byte[] raw = readAll(c.getInputStream());
+        byte[] raw = null;
+        Exception last = null;
+        String[] urls = { String.format(REPO_PRIMARY, arch), String.format(REPO_FALLBACK, arch) };
+        String[] pools = { POOL_PRIMARY, POOL_FALLBACK };
+        for (int i = 0; i < urls.length; i++) {
+            try {
+                URL u = new URL(urls[i]);
+                HttpURLConnection c = (HttpURLConnection) u.openConnection();
+                c.setRequestMethod("GET");
+                c.setRequestProperty("User-Agent", "EOST-Packer/1.6");
+                c.setConnectTimeout(15000);
+                c.setReadTimeout(45000);
+                if (c.getResponseCode() == 200) {
+                    raw = readAll(c.getInputStream());
+                    repoBase = urls[i]; repoPool = pools[i];
+                    break;
+                }
+            } catch (Exception e) { last = e; }
+        }
+        if (raw == null) throw last != null ? last : new Exception("仓库不可达");
         String text = new String(raw, StandardCharsets.UTF_8);
         String[] blocks = text.split("\n\n");
         for (String b : blocks) {
@@ -136,7 +156,11 @@ public class DependencyManager {
         long size = 0;
         try { size = Long.parseLong(meta.getOrDefault("Size", "0")); } catch (Exception ignored) {}
         if (p != null) p.log("[依赖] 下载 " + name + (size > 0 ? "（约 " + (size / 1024 / 1024) + " MB）" : ""));
-        File deb = downloadToCache(POOL + filename, name);
+        File deb = downloadToCache((repoPool.isEmpty() ? POOL_FALLBACK : repoPool) + filename, name);
+        if (deb == null) {
+            // 主源失败时试官方源
+            deb = downloadToCache(POOL_FALLBACK + filename, name);
+        }
         if (deb == null) return false;
         if (p != null) p.log("[依赖] 解包 " + name + " …");
         boolean ok = DebExtractor.extract(deb, runtimeDir(name));

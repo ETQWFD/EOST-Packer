@@ -3,6 +3,7 @@
 <string name="app_name">EOST Packer</string>
 <string name="nav_home">Home</string>
 <string name="nav_pack">Pack</string>
+<string name="nav_web">Web2APK</string>
 <string name="nav_settings">Settings</string>
 <string name="welcome">Welcome to EOST Packer</string>
 <string name="welcome_sub">By LongTengOS · One-tap packer and guard for Android</string>
@@ -24,6 +25,7 @@
 <string name="perm_add">Add</string>
 <string name="perm_delete">Delete</string>
 <string name="ver_title">Project Version</string>
+<string name="pkg_title">Package Name</string>
 <string name="btn_ver_save">Save</string>
 <string name="settings_group_ai">General</string>
 <string name="settings_group_build">Build</string>
@@ -63,7 +65,12 @@
 <string name="check_update">Check Update</string>
 <string name="about">About</string>
 <string name="developer">Developer: LongTengOS</string>
-<string name="version">Version 1.4.1</string>
+<string name="version">Version 1.6.0</string>
+<string name="web_hint">Select a project with index.html (zip or folder)</string>
+<string name="web_title">Web to APK (WebView wrapper)</string>
+<string name="web_pack">Build APK</string>
+<string name="web_no_index">index.html not found at project root</string>
+<string name="guide_title">User Guide</string>
 <string name="progress_running">Packing…</string>
 <string name="progress_done">Done</string>
 <string name="progress_fail">Failed</string>

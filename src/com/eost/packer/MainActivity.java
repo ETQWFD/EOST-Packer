@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eost.packer.net.ApiClient;
@@ -20,15 +22,17 @@ import com.eost.packer.svc.PackService;
 import com.eost.packer.ui.HomePage;
 import com.eost.packer.ui.PackPage;
 import com.eost.packer.ui.SettingsPage;
+import com.eost.packer.ui.WebPage;
 import com.eost.packer.util.Prefs;
 
 public class MainActivity extends Activity implements View.OnClickListener {
 
-    private View homeView, packView, settingsView;
-    private Button tabHome, tabPack, tabSettings;
+    private View homeView, packView, webView, settingsView;
+    private Button tabHome, tabPack, tabWeb, tabSettings;
     private Prefs prefs;
     private HomePage homePage;
     private PackPage packPage;
+    private WebPage webPage;
     private SettingsPage settingsPage;
 
     @Override
@@ -43,19 +47,24 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             homeView = getLayoutInflater().inflate(R.layout.home_fragment, null);
             packView = getLayoutInflater().inflate(R.layout.pack_fragment, null);
+            webView = getLayoutInflater().inflate(R.layout.web_fragment, null);
             settingsView = getLayoutInflater().inflate(R.layout.settings_fragment, null);
 
             homePage = new HomePage(this, homeView);
             packPage = new PackPage(this, packView);
+            webPage = new WebPage(this, webView);
             settingsPage = new SettingsPage(this, settingsView);
 
             FrameLayout_replace(R.id.container, homeView);
+            applyDarkColors();
 
             tabHome = findViewById(R.id.tab_home);
             tabPack = findViewById(R.id.tab_pack);
+            tabWeb = findViewById(R.id.tab_web);
             tabSettings = findViewById(R.id.tab_settings);
             tabHome.setOnClickListener(this);
             tabPack.setOnClickListener(this);
+            tabWeb.setOnClickListener(this);
             tabSettings.setOnClickListener(this);
 
             requestPermissions();
@@ -64,7 +73,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
             } catch (Throwable ignored) {
             }
         } catch (Throwable t) {
-            // 启动绝不闪退：任何异常记录到 etdo/crash.log 并给出提示
             try {
                 android.widget.Toast.makeText(this,
                         "启动异常已记录到 etdo/crash.log: " + t.getMessage(),
@@ -106,15 +114,58 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } catch (Throwable ignored) {}
     }
 
-    private void applyTheme() {
+    public boolean isDark() {
         int m = prefs.themeMode();
-        boolean dark = (m == 1) || (m == 2 && (getResources().getConfiguration().uiMode
+        return (m == 1) || (m == 2 && (getResources().getConfiguration().uiMode
                 & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
                 == android.content.res.Configuration.UI_MODE_NIGHT_YES);
-        setTheme(dark ? R.style.Theme_EOST_Dark : R.style.Theme_EOST);
+    }
+
+    private void applyTheme() {
+        setTheme(isDark() ? R.style.Theme_EOST_Dark : R.style.Theme_EOST);
         try {
             getWindow().setStatusBarColor(prefs.accent());
         } catch (Throwable ignored) {}
+    }
+
+    /** 暗黑模式真正生效：递归把卡片/文字/滚动条切成暗色 */
+    public void applyDarkColors() {
+        try {
+            boolean dark = isDark();
+            int pageBg = dark ? 0xFF121416 : 0xFFF2F3F5;
+            int cardBg = dark ? 0xFF1E2125 : 0xFFFFFFFF;
+            int textP = dark ? 0xFFE8EAED : 0xFF1A1C1E;
+            int textS = dark ? 0xFF9AA0A6 : 0xFF5F6368;
+            View root = ((ViewGroup) getWindow().getDecorView()).getChildAt(0);
+            if (root == null) return;
+            applyNode(root, dark, pageBg, cardBg, textP, textS);
+        } catch (Throwable ignored) {}
+    }
+
+    private void applyNode(View v, boolean dark, int pageBg, int cardBg, int textP, int textS) {
+        if (v instanceof ScrollView) { v.setBackgroundColor(pageBg); }
+        else if (v instanceof LinearLayout) {
+            Integer tag = (Integer) v.getTag();
+            // 卡片式卡片：有圆角 drawable 的，给卡片色
+            if (v.getBackground() != null && !(v instanceof Button)) {
+                // 不覆盖用户自定义背景图
+            }
+            // 只给直接子 LinearLayout（卡片容器）上色
+            if (v.getParent() instanceof ViewGroup) {
+                ViewGroup gp = (ViewGroup) v.getParent();
+                if (gp.getId() == R.id.container) v.setBackgroundColor(cardBg);
+            }
+        }
+        if (v instanceof TextView) {
+            TextView t = (TextView) v;
+            // 保持主题色（primary）不动，其余文字按主题色
+            int c = t.getCurrentTextColor();
+            if (c == 0xFF5F6368 || c == 0xFF1A1C1E) t.setTextColor(dark ? textP : (c == 0xFF1A1C1E ? textP : textS));
+        }
+        if (v instanceof ViewGroup) {
+            ViewGroup g = (ViewGroup) v;
+            for (int i = 0; i < g.getChildCount(); i++) applyNode(g.getChildAt(i), dark, pageBg, cardBg, textP, textS);
+        }
     }
 
     private void requestPermissions() {
@@ -167,11 +218,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } else if (id == R.id.tab_pack) {
             FrameLayout_replace(R.id.container, packView);
             setTab(tabPack);
+        } else if (id == R.id.tab_web) {
+            FrameLayout_replace(R.id.container, webView);
+            setTab(tabWeb);
         } else if (id == R.id.tab_settings) {
             FrameLayout_replace(R.id.container, settingsView);
             setTab(tabSettings);
             settingsPage.onShow();
         }
+        applyDarkColors();
     }
 
     private void setTab(Button active) {
@@ -179,6 +234,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         int off = getResources().getColor(R.color.text_sub);
         tabHome.setTextColor(active == tabHome ? on : off);
         tabPack.setTextColor(active == tabPack ? on : off);
+        tabWeb.setTextColor(active == tabWeb ? on : off);
         tabSettings.setTextColor(active == tabSettings ? on : off);
     }
 
@@ -191,6 +247,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
         if (packPage != null) packPage.onActivityResult(req, res, data);
+        if (webPage != null) webPage.onActivityResult(req, res, data);
         if (req == 2001 && data != null && data.getData() != null) {
             if (settingsPage != null) settingsPage.onSignPicked(data.getData());
         }

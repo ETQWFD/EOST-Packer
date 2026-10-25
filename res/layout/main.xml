@@ -22,19 +22,25 @@
         <Button android:id="@+id/tab_home" style="@style/Btn"
             android:layout_width="0dp" android:layout_weight="1"
             android:layout_height="match_parent"
-            android:text="@string/nav_home" android:textSize="14sp"
+            android:text="@string/nav_home" android:textSize="13sp"
             android:background="?android:attr/selectableItemBackground"
             android:textColor="@color/primary"/>
         <Button android:id="@+id/tab_pack" style="@style/Btn"
             android:layout_width="0dp" android:layout_weight="1"
             android:layout_height="match_parent"
-            android:text="@string/nav_pack" android:textSize="14sp"
+            android:text="@string/nav_pack" android:textSize="13sp"
+            android:background="?android:attr/selectableItemBackground"
+            android:textColor="@color/text_sub"/>
+        <Button android:id="@+id/tab_web" style="@style/Btn"
+            android:layout_width="0dp" android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="@string/nav_web" android:textSize="13sp"
             android:background="?android:attr/selectableItemBackground"
             android:textColor="@color/text_sub"/>
         <Button android:id="@+id/tab_settings" style="@style/Btn"
             android:layout_width="0dp" android:layout_weight="1"
             android:layout_height="match_parent"
-            android:text="@string/nav_settings" android:textSize="14sp"
+            android:text="@string/nav_settings" android:textSize="13sp"
             android:background="?android:attr/selectableItemBackground"
             android:textColor="@color/text_sub"/>
     </LinearLayout>
