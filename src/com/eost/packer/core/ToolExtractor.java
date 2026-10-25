@@ -130,9 +130,9 @@ public class ToolExtractor {
         return new File(abiDir, "bin/" + name);
     }
     public File libDir() {
+        // 所有依赖 .so 平铺在 nativeLibraryDir 根下（Android 只解压 lib/<abi>/*.so）
         try {
-            File libDeps = new File(ctx.getApplicationInfo().nativeLibraryDir, "libdeps");
-            if (libDeps.exists()) return libDeps;
+            return new File(ctx.getApplicationInfo().nativeLibraryDir);
         } catch (Exception ignored) {}
         return new File(abiDir, "lib");
     }

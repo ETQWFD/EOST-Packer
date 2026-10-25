@@ -1,5 +1,12 @@
 [
   {
+    "id": 13,
+    "title": "v1.7.3 修复libfmt.so找不到",
+    "version": "1.7.3",
+    "date": "2026-10-26",
+    "body": "· 修复 aapt2 启动时报 libfmt.so not found：所有依赖 .so 平铺到 lib/<abi>/ 根目录（Android 只解压 lib/<abi>/*.so，不会解压子目录）\n· 32/64 位全支持，LD_LIBRARY_PATH 直接指向 nativeLibraryDir"
+  },
+  {
     "id": 12,
     "title": "v1.7.2 根治32位打包权限",
     "version": "1.7.2",
