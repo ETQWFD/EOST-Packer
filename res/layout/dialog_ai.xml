@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:padding="18dp">
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/ai_endpoint" android:textSize="12sp"
+        android:textColor="#FF5F6368"/>
+    <EditText android:id="@+id/ai_endpoint" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="https://api.openai.com/v1/chat/completions"
+        android:background="@drawable/input_bg" android:padding="10dp"
+        android:inputType="textUri" android:layout_marginTop="4dp"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/ai_key" android:textSize="12sp"
+        android:textColor="#FF5F6368" android:layout_marginTop="10dp"/>
+    <EditText android:id="@+id/ai_key" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="sk-xxx"
+        android:background="@drawable/input_bg" android:padding="10dp"
+        android:inputType="textPassword" android:layout_marginTop="4dp"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/ai_model" android:textSize="12sp"
+        android:textColor="#FF5F6368" android:layout_marginTop="10dp"/>
+    <EditText android:id="@+id/ai_model" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:hint="gpt-4o-mini"
+        android:background="@drawable/input_bg" android:padding="10dp"
+        android:layout_marginTop="4dp"/>
+</LinearLayout>

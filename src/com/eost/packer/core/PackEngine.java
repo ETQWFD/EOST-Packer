@@ -46,6 +46,143 @@ public class PackEngine {
         page.log("[权限] 已移除最后一条自定义权限");
     }
 
+    /** 返回当前选中项目的根目录（未选择时返回 null） */
+    public File projectDir() {
+        return resolveProject();
+    }
+
+    /** 扫描 AndroidManifest.xml 中已声明的权限 */
+    public java.util.List<String> scanPermissions() {
+        java.util.List<String> out = new java.util.ArrayList<>();
+        try {
+            File project = resolveProject();
+            if (project == null) return out;
+            File manifest = new File(project, "AndroidManifest.xml");
+            if (!manifest.exists()) return out;
+            String s = new String(readAll(manifest), StandardCharsets.UTF_8);
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile(
+                    "<uses-permission\\s+android:name=\"([^\"]+)\"");
+            java.util.regex.Matcher m = p.matcher(s);
+            while (m.find()) {
+                String full = m.group(1);
+                int idx = full.lastIndexOf('.');
+                out.add(idx >= 0 ? full.substring(idx + 1) : full);
+            }
+        } catch (Exception e) {
+            log("[权限] 扫描失败: " + e.getMessage());
+        }
+        return out;
+    }
+
+    /** 在 AndroidManifest.xml 中添加权限（真实写入源码） */
+    public void addPermissionToSource(String perm) {
+        try {
+            File project = resolveProject();
+            if (project == null) { log("[权限] 请先选择项目根目录"); return; }
+            File manifest = new File(project, "AndroidManifest.xml");
+            if (!manifest.exists()) { log("[权限] 未找到 AndroidManifest.xml"); return; }
+            String s = new String(readAll(manifest), StandardCharsets.UTF_8);
+            String full = "android.permission." + perm;
+            if (s.contains(full)) { log("[权限] " + full + " 已存在，无需重复添加"); return; }
+            String entry = "<uses-permission android:name=\"" + full + "\"/>";
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("(<manifest[^>]*>)").matcher(s);
+            if (m.find()) {
+                s = s.substring(0, m.end()) + "\n    " + entry + s.substring(m.end());
+                writeAll(manifest, s);
+                log("[权限] 已写入源码: " + full);
+            } else {
+                log("[权限] 未找到 manifest 标签，写入失败");
+            }
+        } catch (Exception e) {
+            log("[权限] 添加失败: " + e.getMessage());
+        }
+    }
+
+    /** 从 AndroidManifest.xml 删除权限（真实修改源码） */
+    public void removePermissionFromSource(String perm) {
+        try {
+            File project = resolveProject();
+            if (project == null) { log("[权限] 请先选择项目根目录"); return; }
+            File manifest = new File(project, "AndroidManifest.xml");
+            if (!manifest.exists()) { log("[权限] 未找到 AndroidManifest.xml"); return; }
+            String s = new String(readAll(manifest), StandardCharsets.UTF_8);
+            String full = "android.permission." + perm;
+            String removed = s.replaceAll(
+                    "\\s*<uses-permission\\s+android:name=\"" + full + "\"\\s*/?>\\s*", "\n");
+            if (removed.equals(s)) { log("[权限] " + full + " 不存在，无需删除"); return; }
+            writeAll(manifest, removed);
+            log("[权限] 已从源码删除: " + full);
+        } catch (Exception e) {
+            log("[权限] 删除失败: " + e.getMessage());
+        }
+    }
+
+    /** 读取 AndroidManifest.xml 的 versionName */
+    public String readVersion() {
+        try {
+            File project = resolveProject();
+            if (project == null) return "";
+            File manifest = new File(project, "AndroidManifest.xml");
+            if (!manifest.exists()) return "";
+            String s = new String(readAll(manifest), StandardCharsets.UTF_8);
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("android:versionName=\"([^\"]*)\"").matcher(s);
+            return m.find() ? m.group(1) : "";
+        } catch (Exception e) { return ""; }
+    }
+
+    /** 写入 AndroidManifest.xml 的 versionName */
+    public void writeVersion(String v) {
+        try {
+            File project = resolveProject();
+            if (project == null) { log("[版本] 请先选择项目根目录"); return; }
+            File manifest = new File(project, "AndroidManifest.xml");
+            if (!manifest.exists()) { log("[版本] 未找到 AndroidManifest.xml"); return; }
+            String s = new String(readAll(manifest), StandardCharsets.UTF_8);
+            String vv = v == null ? "" : v.trim();
+            if (vv.isEmpty()) { log("[版本] 版本号不能为空"); return; }
+            if (s.contains("android:versionName=\"" + vv + "\"")) {
+                log("[版本] 版本号已是 " + vv);
+                return;
+            }
+            String replaced = s.replaceFirst("android:versionName=\"[^\"]*\"",
+                    "android:versionName=\"" + vv + "\"");
+            if (replaced.equals(s)) {
+                // manifest 里没有 versionName，尝试在 manifest 标签内补上
+                java.util.regex.Matcher m = java.util.regex.Pattern
+                        .compile("(<manifest([^>]*))>").matcher(s);
+                if (m.find()) {
+                    String tag = m.group(1);
+                    String add = tag.endsWith("/") ? " xmlns:android=\"http://schemas.android.com/apk/res/android\"" : "";
+                    replaced = s.replaceFirst(java.util.regex.Pattern.quote(tag + ">"),
+                            tag + " android:versionName=\"" + vv + "\">");
+                    if (replaced.equals(s)) { log("[版本] 未能定位 manifest 标签"); return; }
+                } else { log("[版本] 未能定位 manifest 标签"); return; }
+            }
+            writeAll(manifest, replaced);
+            log("[版本] 已写入源码: versionName=" + vv);
+        } catch (Exception e) {
+            log("[版本] 写入失败: " + e.getMessage());
+        }
+    }
+
+    private byte[] readAll(File f) throws Exception {
+        FileInputStream in = new FileInputStream(f);
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        byte[] buf = new byte[8192];
+        int r;
+        while ((r = in.read(buf)) > 0) bo.write(buf, 0, r);
+        in.close();
+        return bo.toByteArray();
+    }
+
+    private void writeAll(File f, String s) throws Exception {
+        FileOutputStream fo = new FileOutputStream(f);
+        fo.write(s.getBytes(StandardCharsets.UTF_8));
+        fo.close();
+    }
+
     public void fixDeps() {
         new Thread(() -> {
             log("== EOST 依赖扫描 ==");

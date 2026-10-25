@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content" android:padding="18dp">
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/perm_title" android:textSize="17sp" android:textStyle="bold"
+        android:textColor="#FF1A1C1E"/>
+
+    <LinearLayout android:orientation="horizontal"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" android:gravity="center_vertical">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/ver_title" android:textSize="13sp"
+            android:textColor="#FF5F6368"/>
+        <EditText android:id="@+id/ver_edit" android:layout_width="0dp"
+            android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginStart="8dp" android:hint="1.0.0"
+            android:background="@drawable/input_bg" android:padding="8dp"
+            android:textSize="13sp"/>
+        <Button android:id="@+id/btn_ver_save" style="@style/Btn"
+            android:layout_marginStart="8dp" android:text="@string/btn_ver_save"/>
+    </LinearLayout>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/perm_has" android:textSize="13sp"
+        android:textColor="#FF1F6FEB" android:layout_marginTop="14dp"/>
+    <ListView android:id="@+id/lv_has" android:layout_width="match_parent"
+        android:layout_height="150dp" android:dividerHeight="4dp"
+        android:layout_marginTop="6dp"/>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="@string/perm_add_list" android:textSize="13sp"
+        android:textColor="#FF188038" android:layout_marginTop="14dp"/>
+    <ListView android:id="@+id/lv_all" android:layout_width="match_parent"
+        android:layout_height="220dp" android:dividerHeight="4dp"
+        android:layout_marginTop="6dp"/>
+</LinearLayout>

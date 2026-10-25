@@ -5,9 +5,13 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +19,9 @@ import android.widget.Toast;
 import com.eost.packer.MainActivity;
 import com.eost.packer.R;
 import com.eost.packer.core.PackEngine;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PackPage {
     private final MainActivity act;
@@ -28,6 +35,60 @@ public class PackPage {
 
     private static final int REQ_ZIP = 1001;
     private static final int REQ_FOLDER = 1002;
+
+    /** 全量权限库（中文名，含特殊权限），android.permission. 前缀省略 */
+    public static final String[][] PERM_LIB = {
+            {"INTERNET", "网络访问"},
+            {"ACCESS_NETWORK_STATE", "网络状态"},
+            {"ACCESS_WIFI_STATE", "WiFi 状态"},
+            {"CHANGE_WIFI_STATE", "修改 WiFi"},
+            {"WRITE_SETTINGS", "修改系统设置（特殊）"},
+            {"CAMERA", "相机"},
+            {"FLASHLIGHT", "闪光灯"},
+            {"RECORD_AUDIO", "录音 / 麦克风"},
+            {"READ_EXTERNAL_STORAGE", "读取存储"},
+            {"WRITE_EXTERNAL_STORAGE", "写入存储"},
+            {"MANAGE_EXTERNAL_STORAGE", "管理所有文件（特殊）"},
+            {"READ_MEDIA_IMAGES", "读取媒体图片"},
+            {"READ_MEDIA_VIDEO", "读取媒体视频"},
+            {"READ_MEDIA_AUDIO", "读取媒体音频"},
+            {"ACCESS_FINE_LOCATION", "精确定位"},
+            {"ACCESS_COARSE_LOCATION", "粗略定位"},
+            {"ACCESS_BACKGROUND_LOCATION", "后台定位"},
+            {"READ_CONTACTS", "读取联系人"},
+            {"WRITE_CONTACTS", "写入联系人"},
+            {"GET_ACCOUNTS", "获取账户"},
+            {"CALL_PHONE", "拨打电话"},
+            {"READ_CALL_LOG", "读取通话记录"},
+            {"WRITE_CALL_LOG", "写入通话记录"},
+            {"READ_PHONE_STATE", "读取手机状态"},
+            {"READ_PHONE_NUMBERS", "读取手机号码"},
+            {"READ_SMS", "读取短信"},
+            {"SEND_SMS", "发送短信"},
+            {"RECEIVE_SMS", "接收短信"},
+            {"BLUETOOTH", "蓝牙"},
+            {"BLUETOOTH_ADMIN", "蓝牙管理"},
+            {"BLUETOOTH_CONNECT", "连接蓝牙设备"},
+            {"BLUETOOTH_SCAN", "扫描蓝牙设备"},
+            {"NFC", "近场通信 NFC"},
+            {"VIBRATE", "振动"},
+            {"WAKE_LOCK", "唤醒锁（保持亮屏）"},
+            {"RECEIVE_BOOT_COMPLETED", "开机自启动"},
+            {"USE_FINGERPRINT", "指纹识别"},
+            {"USE_BIOMETRIC", "生物识别"},
+            {"BODY_SENSORS", "身体传感器"},
+            {"SYSTEM_ALERT_WINDOW", "悬浮窗（特殊）"},
+            {"REQUEST_INSTALL_PACKAGES", "安装应用（特殊）"},
+            {"REQUEST_IGNORE_BATTERY_OPTIMIZATIONS", "忽略电池优化（特殊）"},
+            {"ACCESS_NOTIFICATION_POLICY", "通知使用权（特殊）"},
+            {"FOREGROUND_SERVICE", "前台服务"},
+            {"POST_NOTIFICATIONS", "发送通知"},
+            {"QUERY_ALL_PACKAGES", "查询所有应用（特殊）"},
+            {"PACKAGE_USAGE_STATS", "使用情况统计（特殊）"},
+            {"ACTIVITY_RECOGNITION", "活动识别"},
+            {"BIND_ACCESSIBILITY_SERVICE", "无障碍服务（需系统授权）"},
+            {"KILL_BACKGROUND_PROCESSES", "关闭后台进程"}
+    };
 
     public PackPage(MainActivity act, View root) {
         this.act = act;
@@ -70,17 +131,105 @@ public class PackPage {
     }
 
     private void showSettings() {
-        String[] perms = {"INTERNET","ACCESS_NETWORK_STATE","WRITE_EXTERNAL_STORAGE",
-                "READ_EXTERNAL_STORAGE","CAMERA","RECORD_AUDIO","ACCESS_FINE_LOCATION",
-                "ACCESS_COARSE_LOCATION","BLUETOOTH","NFC","CALL_PHONE","READ_CONTACTS",
-                "READ_SMS","SEND_SMS","RECEIVE_SMS","GET_ACCOUNTS","USE_FINGERPRINT",
-                "WAKE_LOCK","VIBRATE","RECEIVE_BOOT_COMPLETED","ACCESS_NOTIFICATION_POLICY",
-                "SYSTEM_ALERT_WINDOW","REQUEST_INSTALL_PACKAGES","MANAGE_EXTERNAL_STORAGE"};
+        View box = LayoutInflater.from(act).inflate(R.layout.dialog_perms, null);
+        final EditText verEdit = box.findViewById(R.id.ver_edit);
+        final ListView lvHas = box.findViewById(R.id.lv_has);
+        final ListView lvAll = box.findViewById(R.id.lv_all);
+
+        final List<String> has = new ArrayList<>();
+        final ArrayAdapter<String> hasAdp = new ArrayAdapter<String>(act,
+                android.R.layout.simple_list_item_1, has) {
+            @Override
+            public View getView(int pos, View cv, ViewGroup p) {
+                TextView t = (TextView) super.getView(pos, cv, p);
+                t.setTextColor(0xFF1A1C1E);
+                t.setTextSize(13);
+                return t;
+            }
+        };
+        lvHas.setAdapter(hasAdp);
+
+        final List<String> all = new ArrayList<>();
+        for (String[] p : PERM_LIB) all.add(p[1]);
+        final ArrayAdapter<String> allAdp = new ArrayAdapter<String>(act,
+                android.R.layout.simple_list_item_1, all) {
+            @Override
+            public View getView(int pos, View cv, ViewGroup p) {
+                TextView t = (TextView) super.getView(pos, cv, p);
+                t.setTextColor(0xFF1A1C1E);
+                t.setTextSize(13);
+                return t;
+            }
+        };
+        lvAll.setAdapter(allAdp);
+
+        // 异步扫描源码中的权限与版本号
+        new Thread(() -> {
+            final List<String> scanned = engine.scanPermissions();
+            final String ver = engine.readVersion();
+            ui.post(() -> {
+                has.clear();
+                for (String s : scanned) {
+                    for (String[] p : PERM_LIB) {
+                        if (p[0].equals(s)) { has.add(p[1] + "（" + p[0] + "）"); break; }
+                    }
+                    if (has.size() < scanned.size()) {
+                        boolean found = false;
+                        for (String[] p : PERM_LIB) {
+                            if (p[0].equals(s)) { found = true; break; }
+                        }
+                        if (!found) has.add(s);
+                    }
+                }
+                hasAdp.notifyDataSetChanged();
+                verEdit.setText(ver);
+            });
+        }).start();
+
+        // 已添加列表：点击删除（真实修改源码）
+        lvHas.setOnItemClickListener((p, v, pos, id) -> {
+            String raw = has.get(pos);
+            String key = raw;
+            int lb = raw.indexOf('（');
+            if (lb > 0) key = raw.substring(lb + 1, raw.indexOf('）'));
+            final String fk = key;
+            has.remove(pos);
+            hasAdp.notifyDataSetChanged();
+            new Thread(() -> engine.removePermissionFromSource(fk)).start();
+            act.toast("已从源码移除: " + fk);
+        });
+
+        // 权限库：点击添加（真实写入源码）
+        lvAll.setOnItemClickListener((p, v, pos, id) -> {
+            String cn = all.get(pos);
+            String key = null;
+            for (String[] pe : PERM_LIB) {
+                if (pe[1].equals(cn)) { key = pe[0]; break; }
+            }
+            if (key == null) return;
+            final String fk2 = key;
+            for (int i = 0; i < has.size(); i++) {
+                if (has.get(i).startsWith(cn)) {
+                    act.toast("该权限已添加");
+                    return;
+                }
+            }
+            has.add(cn + "（" + fk2 + "）");
+            hasAdp.notifyDataSetChanged();
+            new Thread(() -> engine.addPermissionToSource(fk2)).start();
+            act.toast("已写入源码: " + fk2);
+        });
+
+        box.findViewById(R.id.btn_ver_save).setOnClickListener(v -> {
+            String nv = verEdit.getText().toString().trim();
+            if (nv.isEmpty()) { act.toast("版本号不能为空"); return; }
+            new Thread(() -> engine.writeVersion(nv)).start();
+            act.toast("版本号已保存: " + nv);
+        });
+
         new AlertDialog.Builder(act)
-                .setTitle(R.string.perm_title)
-                .setItems(perms, (d, i) -> engine.addPermission(perms[i]))
-                .setPositiveButton(R.string.perm_add, null)
-                .setNegativeButton(R.string.perm_delete, (d,i)-> engine.removePermission())
+                .setView(box)
+                .setPositiveButton(R.string.close, null)
                 .show();
     }
 

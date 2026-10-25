@@ -50,4 +50,51 @@
         <item name="android:background">@drawable/btn_primary_bg</item>
         <item name="android:padding">10dp</item>
     </style>
+
+    <style name="SettingRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/list_item_bg</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+    </style>
+
+    <style name="SettingRowNoArrow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">@drawable/list_item_bg</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+    </style>
+
+    <style name="SettingLabel">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#FF1A1C1E</item>
+    </style>
+
+    <style name="SettingValue">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">#FF5F6368</item>
+        <item name="android:maxWidth">180dp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="SettingChevron">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">›</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#FF9AA0A6</item>
+        <item name="android:layout_marginStart">8dp</item>
+    </style>
 </resources>

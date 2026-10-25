@@ -23,16 +23,25 @@
                 android:fontFamily="monospace"/>
         </LinearLayout>
 
-        <LinearLayout style="@style/Card" android:orientation="horizontal"
-            android:gravity="center_vertical">
-            <Button android:id="@+id/btn_pack_settings" style="@style/Btn"
-                android:text="@string/btn_settings"/>
-            <Button android:id="@+id/btn_fix" style="@style/Btn"
-                android:text="@string/btn_fix"/>
-            <Button android:id="@+id/btn_ai" style="@style/Btn"
-                android:text="@string/btn_ai"/>
-            <Button android:id="@+id/btn_pack" style="@style/BtnPrimary"
-                android:text="@string/btn_pack"/>
+        <LinearLayout style="@style/Card" android:orientation="vertical">
+            <LinearLayout android:orientation="horizontal"
+                android:layout_width="match_parent" android:layout_height="wrap_content">
+                <Button android:id="@+id/btn_pack_settings" style="@style/Btn"
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:text="@string/btn_settings"/>
+                <Button android:id="@+id/btn_fix" style="@style/Btn"
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:text="@string/btn_fix"/>
+            </LinearLayout>
+            <LinearLayout android:orientation="horizontal"
+                android:layout_width="match_parent" android:layout_height="wrap_content">
+                <Button android:id="@+id/btn_ai" style="@style/Btn"
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:text="@string/btn_ai"/>
+                <Button android:id="@+id/btn_pack" style="@style/BtnPrimary"
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:text="@string/btn_pack"/>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout style="@style/Card" android:orientation="vertical">

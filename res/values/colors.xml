@@ -10,4 +10,5 @@
     <color name="success">#188038</color>
     <color name="error">#D93025</color>
     <color name="warn">#F9AB00</color>
+    <color name="bg_default">#F7F8FA</color>
 </resources>

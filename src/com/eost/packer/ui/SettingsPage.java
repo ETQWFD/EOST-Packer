@@ -5,12 +5,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eost.packer.MainActivity;
 import com.eost.packer.R;
@@ -20,6 +19,7 @@ import com.eost.packer.util.AgeCalc;
 public class SettingsPage {
     private final MainActivity act;
     private final View root;
+    private static final int REQ_BG = 3001;
 
     public SettingsPage(MainActivity act, View root) {
         this.act = act;
@@ -27,78 +27,148 @@ public class SettingsPage {
         bindAI();
         bindSign();
         bindTheme();
+        bindColor();
+        bindBg();
         bindLang();
         bindUpdate();
         bindAbout();
     }
 
+    private android.app.Dialog dialog() {
+        return null; // helper placeholder
+    }
+
     private void bindAI() {
-        EditText ep = root.findViewById(R.id.ai_endpoint);
-        EditText key = root.findViewById(R.id.ai_key);
-        EditText model = root.findViewById(R.id.ai_model);
-        ep.setText(act.prefs().aiEndpoint());
-        key.setText(act.prefs().aiKey());
-        model.setText(act.prefs().aiModel());
-        root.findViewById(R.id.btn_save_ai).setOnClickListener(v -> {
-            act.prefs().set("ai_endpoint", ep.getText().toString());
-            act.prefs().set("ai_key", key.getText().toString());
-            act.prefs().set("ai_model", model.getText().toString());
-            act.toast("AI 配置已保存");
+        root.findViewById(R.id.row_ai).setOnClickListener(v -> {
+            View box = LayoutInflater.from(act).inflate(R.layout.dialog_ai, null);
+            final EditText ep = box.findViewById(R.id.ai_endpoint);
+            final EditText key = box.findViewById(R.id.ai_key);
+            final EditText model = box.findViewById(R.id.ai_model);
+            ep.setText(act.prefs().aiEndpoint());
+            key.setText(act.prefs().aiKey());
+            model.setText(act.prefs().aiModel());
+            new AlertDialog.Builder(act)
+                    .setView(box)
+                    .setTitle(R.string.ai_config)
+                    .setPositiveButton(R.string.save, (d, i) -> {
+                        act.prefs().set("ai_endpoint", ep.getText().toString().trim());
+                        act.prefs().set("ai_key", key.getText().toString().trim());
+                        act.prefs().set("ai_model", model.getText().toString().trim());
+                        act.toast("AI 配置已保存");
+                        refreshVals();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
         });
     }
 
     private void bindSign() {
-        RadioGroup g = root.findViewById(R.id.sign_mode);
-        int m = act.prefs().signMode();
-        ((RadioButton) (m == 1 ? root.findViewById(R.id.sign_v1)
-                : m == 2 ? root.findViewById(R.id.sign_v2)
-                : root.findViewById(R.id.sign_both))).setChecked(true);
-        g.setOnCheckedChangeListener((gr, id) -> {
-            int mode = id == R.id.sign_v1 ? 1 : id == R.id.sign_v2 ? 2 : 3;
-            act.prefs().setSignMode(mode);
-        });
-        root.findViewById(R.id.btn_import_sign).setOnClickListener(v -> {
-            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-            i.setType("*/*");
-            act.startActivityForResult(Intent.createChooser(i, "导入签名文件(.jks/.keystore)"), 2001);
+        root.findViewById(R.id.row_sign).setOnClickListener(v -> {
+            int cur = act.prefs().signMode();
+            String[] items = {str(R.string.sign_v1), str(R.string.sign_v2), str(R.string.sign_v1v2)};
+            new AlertDialog.Builder(act)
+                    .setTitle(R.string.sign_title)
+                    .setSingleChoiceItems(items, cur - 1, (d, i) -> {
+                        act.prefs().setSignMode(i + 1);
+                        d.dismiss();
+                        act.toast("签名方案已保存: " + items[i]);
+                        refreshVals();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
         });
     }
 
     private void bindTheme() {
-        RadioGroup g = root.findViewById(R.id.theme_mode);
-        int m = act.prefs().themeMode();
-        ((RadioButton) (m == 0 ? root.findViewById(R.id.theme_light)
-                : m == 1 ? root.findViewById(R.id.theme_dark)
-                : root.findViewById(R.id.theme_auto))).setChecked(true);
-        g.setOnCheckedChangeListener((gr, id) -> {
-            int mode = id == R.id.theme_light ? 0 : id == R.id.theme_dark ? 1 : 2;
-            act.prefs().setThemeMode(mode);
-            act.recreate();
+        root.findViewById(R.id.row_theme).setOnClickListener(v -> {
+            int cur = act.prefs().themeMode();
+            String[] items = {str(R.string.theme_light), str(R.string.theme_dark), str(R.string.theme_auto)};
+            new AlertDialog.Builder(act)
+                    .setTitle(R.string.theme_title)
+                    .setSingleChoiceItems(items, cur, (d, i) -> {
+                        act.prefs().setThemeMode(i);
+                        d.dismiss();
+                        act.toast("主题已切换");
+                        act.recreate();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
         });
-        int[] colors = {R.id.color_blue, R.id.color_green, R.id.color_red, R.id.color_purple};
-        int[] vals = {0xFF1F6FEB, 0xFF188038, 0xFFD93025, 0xFF7B1FA2};
-        for (int i = 0; i < colors.length; i++) {
-            final int c = vals[i];
-            root.findViewById(colors[i]).setOnClickListener(v -> {
-                act.prefs().setAccent(c);
-                act.toast("主题色已切换");
-            });
-        }
+    }
+
+    private void bindColor() {
+        root.findViewById(R.id.row_color).setOnClickListener(v -> {
+            final int[] colors = {0xFF1F6FEB, 0xFF188038, 0xFFD93025, 0xFF7B1FA2};
+            final String[] names = {str(R.string.accent_blue), str(R.string.accent_green),
+                    str(R.string.accent_red), str(R.string.accent_purple)};
+            LinearLayout box = new LinearLayout(act);
+            box.setOrientation(LinearLayout.HORIZONTAL);
+            box.setPadding(40, 16, 40, 16);
+            for (int i = 0; i < colors.length; i++) {
+                final int c = colors[i];
+                View sw = new View(act);
+                android.widget.LinearLayout.LayoutParams lp =
+                        new android.widget.LinearLayout.LayoutParams(52, 52);
+                lp.setMargins(10, 0, 10, 0);
+                sw.setLayoutParams(lp);
+                sw.setBackground(roundColor(c));
+                final String nm = names[i];
+                sw.setOnClickListener(sw2 -> {
+                    act.prefs().setAccent(c);
+                    act.toast("主题颜色已切换: " + nm);
+                    act.recreate();
+                });
+                box.addView(sw);
+            }
+            new AlertDialog.Builder(act)
+                    .setTitle(R.string.accent_title)
+                    .setView(box)
+                    .setPositiveButton(R.string.cancel, null)
+                    .show();
+        });
+    }
+
+    private void bindBg() {
+        root.findViewById(R.id.row_bg).setOnClickListener(v -> {
+            String[] items = {str(R.string.bg_choose), str(R.string.bg_reset)};
+            new AlertDialog.Builder(act)
+                    .setTitle(R.string.bg_title)
+                    .setItems(items, (d, i) -> {
+                        if (i == 0) {
+                            Intent it = new Intent(Intent.ACTION_GET_CONTENT);
+                            it.setType("image/*");
+                            act.startActivityForResult(
+                                    Intent.createChooser(it, "选择背景图片"), REQ_BG);
+                        } else {
+                            act.prefs().setBgPath("");
+                            act.toast("已恢复默认背景");
+                            act.recreate();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
+        });
     }
 
     private void bindLang() {
-        RadioGroup g = root.findViewById(R.id.lang_mode);
-        if ("en".equals(act.prefs().lang())) {
-            ((RadioButton) root.findViewById(R.id.lang_en)).setChecked(true);
-        }
-        g.setOnCheckedChangeListener((gr, id) -> {
-            act.prefs().setLang(id == R.id.lang_en ? "en" : "zh");
-            act.toast("语言已切换（重启后完全生效）");
+        root.findViewById(R.id.row_lang).setOnClickListener(v -> {
+            int cur = "en".equals(act.prefs().lang()) ? 1 : 0;
+            String[] items = {str(R.string.lang_zh), str(R.string.lang_en)};
+            new AlertDialog.Builder(act)
+                    .setTitle(R.string.lang_title)
+                    .setSingleChoiceItems(items, cur, (d, i) -> {
+                        act.prefs().setLang(i == 1 ? "en" : "zh");
+                        d.dismiss();
+                        act.toast("语言已切换");
+                        act.recreate();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
         });
     }
 
     private void bindUpdate() {
-        root.findViewById(R.id.btn_check_update).setOnClickListener(v -> {
+        root.findViewById(R.id.row_update).setOnClickListener(v -> {
             act.toast("正在检查更新…");
             new Thread(() -> {
                 try {
@@ -119,7 +189,7 @@ public class SettingsPage {
                                     .setPositiveButton("前往", (d, i) ->
                                             act.startActivity(new Intent(Intent.ACTION_VIEW,
                                                     Uri.parse(r[1]))))
-                                    .setNegativeButton("取消", null)
+                                    .setNegativeButton(R.string.cancel, null)
                                     .show();
                         }
                     });
@@ -136,6 +206,58 @@ public class SettingsPage {
     }
 
     public void onShow() {
+        refreshVals();
         ((TextView) root.findViewById(R.id.tv_grade)).setText(AgeCalc.gradeNow());
+    }
+
+    public void onBgPicked(Uri uri) {
+        if (uri != null) {
+            act.prefs().setBgPath(uri.toString());
+            act.toast("背景图片已更换");
+            act.recreate();
+        }
+    }
+
+    private void refreshVals() {
+        TextView v1 = root.findViewById(R.id.val_ai);
+        if (v1 != null) {
+            String m = act.prefs().aiModel();
+            v1.setText(m.isEmpty() ? "未配置" : m);
+        }
+        TextView v2 = root.findViewById(R.id.val_sign);
+        if (v2 != null) {
+            int m = act.prefs().signMode();
+            v2.setText(m == 1 ? str(R.string.sign_v1) : m == 2 ? str(R.string.sign_v2) : str(R.string.sign_v1v2));
+        }
+        TextView v3 = root.findViewById(R.id.val_theme);
+        if (v3 != null) {
+            int m = act.prefs().themeMode();
+            v3.setText(m == 0 ? str(R.string.theme_light) : m == 1 ? str(R.string.theme_dark) : str(R.string.theme_auto));
+        }
+        TextView v4 = root.findViewById(R.id.val_color);
+        if (v4 != null) {
+            int c = act.prefs().accent();
+            v4.setText(c == 0xFF188038 ? str(R.string.accent_green)
+                    : c == 0xFFD93025 ? str(R.string.accent_red)
+                    : c == 0xFF7B1FA2 ? str(R.string.accent_purple) : str(R.string.accent_blue));
+        }
+        TextView v5 = root.findViewById(R.id.val_bg);
+        if (v5 != null) {
+            String p = act.prefs().bgPath();
+            v5.setText(p.isEmpty() ? "默认" : "已自定义");
+        }
+        TextView v6 = root.findViewById(R.id.val_lang);
+        if (v6 != null) {
+            v6.setText("en".equals(act.prefs().lang()) ? str(R.string.lang_en) : str(R.string.lang_zh));
+        }
+    }
+
+    private String str(int id) { return act.getString(id); }
+
+    private android.graphics.drawable.Drawable roundColor(final int c) {
+        return new android.graphics.drawable.GradientDrawable() {{
+            setColor(c);
+            setCornerRadius(14);
+        }};
     }
 }

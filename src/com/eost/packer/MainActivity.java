@@ -36,8 +36,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         try {
             super.onCreate(savedInstanceState);
             prefs = new Prefs(this);
+            applyLocale();
             applyTheme();
             setContentView(R.layout.main);
+            applyBackground();
 
             homeView = getLayoutInflater().inflate(R.layout.home_fragment, null);
             packView = getLayoutInflater().inflate(R.layout.pack_fragment, null);
@@ -72,12 +74,47 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    private void applyLocale() {
+        try {
+            String lang = prefs.lang();
+            if (lang == null || lang.isEmpty()) lang = "zh";
+            java.util.Locale loc = new java.util.Locale(lang);
+            android.content.res.Configuration cfg = getResources().getConfiguration();
+            cfg.setLocale(loc);
+            getResources().updateConfiguration(cfg, getResources().getDisplayMetrics());
+        } catch (Throwable ignored) {}
+    }
+
+    private void applyBackground() {
+        try {
+            String bg = prefs.bgPath();
+            if (bg != null && !bg.isEmpty()) {
+                android.graphics.drawable.Drawable d = null;
+                try {
+                    if (bg.startsWith("content://")) {
+                        d = android.graphics.drawable.Drawable.createFromStream(
+                                getContentResolver().openInputStream(Uri.parse(bg)), "bg");
+                    }
+                } catch (Exception ignored) {}
+                if (d != null) {
+                    findViewById(R.id.container).setBackground(d);
+                    return;
+                }
+            }
+            findViewById(R.id.container).setBackgroundColor(
+                    getResources().getColor(R.color.bg_default));
+        } catch (Throwable ignored) {}
+    }
+
     private void applyTheme() {
         int m = prefs.themeMode();
         boolean dark = (m == 1) || (m == 2 && (getResources().getConfiguration().uiMode
                 & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
                 == android.content.res.Configuration.UI_MODE_NIGHT_YES);
         setTheme(dark ? R.style.Theme_EOST_Dark : R.style.Theme_EOST);
+        try {
+            getWindow().setStatusBarColor(prefs.accent());
+        } catch (Throwable ignored) {}
     }
 
     private void requestPermissions() {
@@ -138,7 +175,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void setTab(Button active) {
-        int on = getResources().getColor(R.color.primary);
+        int on = prefs.accent();
         int off = getResources().getColor(R.color.text_sub);
         tabHome.setTextColor(active == tabHome ? on : off);
         tabPack.setTextColor(active == tabPack ? on : off);
@@ -157,6 +194,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         if (req == 2001 && data != null && data.getData() != null) {
             prefs.setSignPath(data.getData().toString());
             toast("签名文件已导入");
+        }
+        if (req == 3001) {
+            Uri u = data == null ? null : data.getData();
+            if (settingsPage != null) settingsPage.onBgPicked(u);
         }
     }
 }
