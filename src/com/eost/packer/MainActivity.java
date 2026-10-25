@@ -128,7 +128,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         } catch (Throwable ignored) {}
     }
 
-    /** 暗黑模式真正生效：递归把卡片/文字/滚动条切成暗色 */
+    /** 暗黑模式真正生效：递归把所有卡片/文字/滚动条切成暗色 */
     public void applyDarkColors() {
         try {
             boolean dark = isDark();
@@ -138,29 +138,34 @@ public class MainActivity extends Activity implements View.OnClickListener {
             int textS = dark ? 0xFF9AA0A6 : 0xFF5F6368;
             View root = ((ViewGroup) getWindow().getDecorView()).getChildAt(0);
             if (root == null) return;
+            root.setBackgroundColor(pageBg);
             applyNode(root, dark, pageBg, cardBg, textP, textS);
         } catch (Throwable ignored) {}
     }
 
     private void applyNode(View v, boolean dark, int pageBg, int cardBg, int textP, int textS) {
-        if (v instanceof ScrollView) { v.setBackgroundColor(pageBg); }
-        else if (v instanceof LinearLayout) {
-            Integer tag = (Integer) v.getTag();
-            // 卡片式卡片：有圆角 drawable 的，给卡片色
-            if (v.getBackground() != null && !(v instanceof Button)) {
-                // 不覆盖用户自定义背景图
-            }
-            // 只给直接子 LinearLayout（卡片容器）上色
+        if (v instanceof ScrollView) {
+            v.setBackgroundColor(pageBg);
+        } else if (v instanceof android.widget.LinearLayout && !(v instanceof android.widget.Button)) {
             if (v.getParent() instanceof ViewGroup) {
                 ViewGroup gp = (ViewGroup) v.getParent();
-                if (gp.getId() == R.id.container) v.setBackgroundColor(cardBg);
+                if (gp.getId() == R.id.container || gp instanceof ScrollView) {
+                    v.setBackgroundColor(cardBg);
+                }
             }
         }
         if (v instanceof TextView) {
             TextView t = (TextView) v;
-            // 保持主题色（primary）不动，其余文字按主题色
             int c = t.getCurrentTextColor();
-            if (c == 0xFF5F6368 || c == 0xFF1A1C1E) t.setTextColor(dark ? textP : (c == 0xFF1A1C1E ? textP : textS));
+            if (c == prefs.accent()) return; // 主题色不动
+            if (dark) {
+                // 深色模式下：原本深的字 → 浅；原本浅的（已变）保持
+                if (c == 0xFF1A1C1E || c == 0xFF202124 || c == 0xFF000000) t.setTextColor(textP);
+                else if (c == 0xFF5F6368) t.setTextColor(textS);
+            } else {
+                // 亮色模式下：原本浅的字 → 深
+                if (c == 0xFFE8EAED || c == 0xFFFFFFFF || c == 0xFF9AA0A6) t.setTextColor(textP);
+            }
         }
         if (v instanceof ViewGroup) {
             ViewGroup g = (ViewGroup) v;

@@ -1,5 +1,5 @@
 {
-  "version": "1.6.0",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.6/EOST-Packer-v1.6.0.apk",
-  "notes": "权限双列表联动、包名/版本号编辑、暗黑模式真正生效、HTML转APK新Tab、依赖清华源、UI美化"
+  "version": "1.6.1",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.6.1/EOST-Packer-v1.6.1.apk",
+  "notes": "暗黑模式卡片深色文字浅色可读、节日祝福、https.txt远程网址打包"
 }

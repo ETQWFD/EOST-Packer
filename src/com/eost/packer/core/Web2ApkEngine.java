@@ -41,14 +41,30 @@ public class Web2ApkEngine {
                 File src = extractTo(path, work);
                 if (src == null) { page.log("[错误] 无法读取所选目录/压缩包"); return; }
                 copyAll(src, wwwDir);
-                File idx = new File(wwwDir, "index.html");
-                if (!idx.exists()) {
-                    // 可能根目录本身有 index.html
-                    File tryIdx = new File(src, "index.html");
-                    if (tryIdx.exists()) copyFile(tryIdx, idx);
+
+                // 支持 https.txt：含远程网址则打包成网址加载壳
+                File httpsTxt = new File(wwwDir, "https.txt");
+                String remoteUrl = null;
+                if (httpsTxt.exists()) {
+                    try {
+                        String t = new String(readFile(httpsTxt), "UTF-8").trim();
+                        if (t.startsWith("http://") || t.startsWith("https://")) remoteUrl = t;
+                    } catch (Exception ignored) {}
                 }
-                if (!idx.exists()) { page.log(act.getString(com.eost.packer.R.string.web_no_index)); return; }
-                page.log("[OK] index.html 已就绪");
+                if (remoteUrl != null) {
+                    page.log("[OK] 检测到 https.txt → 网址加载壳: " + remoteUrl);
+                    File cfg = new File(work, "assets/config.url");
+                    cfg.getParentFile().mkdirs();
+                    try (FileOutputStream fo = new FileOutputStream(cfg)) { fo.write(remoteUrl.getBytes("UTF-8")); }
+                } else {
+                    File idx = new File(wwwDir, "index.html");
+                    if (!idx.exists()) {
+                        File tryIdx = new File(src, "index.html");
+                        if (tryIdx.exists()) copyFile(tryIdx, idx);
+                    }
+                    if (!idx.exists()) { page.log(act.getString(com.eost.packer.R.string.web_no_index)); return; }
+                    page.log("[OK] index.html 已就绪");
+                }
 
                 // 2. 复制模板
                 page.log("[2/5] 写入模板 (Manifest / res / WebView)…");
@@ -228,5 +244,12 @@ public class Web2ApkEngine {
     private void delete(File f) {
         if (f.isDirectory()) { File[] c = f.listFiles(); if (c != null) for (File x : c) delete(x); }
         f.delete();
+    }
+    private byte[] readFile(File f) throws Exception {
+        java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream((int) f.length());
+        try (InputStream in = new java.io.FileInputStream(f)) {
+            byte[] b = new byte[8192]; int r; while ((r = in.read(b)) > 0) bo.write(b, 0, r);
+        }
+        return bo.toByteArray();
     }
 }

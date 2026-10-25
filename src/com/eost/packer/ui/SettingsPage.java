@@ -236,11 +236,36 @@ public class SettingsPage {
 
     private void bindAbout() {
         ((TextView) root.findViewById(R.id.tv_grade)).setText(AgeCalc.gradeNow());
+        showHolidayGreeting();
     }
 
     public void onShow() {
         refreshVals();
         ((TextView) root.findViewById(R.id.tv_grade)).setText(AgeCalc.gradeNow());
+        showHolidayGreeting();
+    }
+
+    private void showHolidayGreeting() {
+        try {
+            java.util.Calendar c = java.util.Calendar.getInstance();
+            int m = c.get(java.util.Calendar.MONTH) + 1;
+            int d = c.get(java.util.Calendar.DAY_OF_MONTH);
+            String greet = null;
+            // 节日祝福（不骚扰，只在节日当天显示一次）
+            if (m == 1 && d == 1) greet = "元旦快乐！新的一年，继续加油！";
+            else if (m == 5 && d == 1) greet = "五一劳动节快乐！";
+            else if (m == 5 && d >= 4 && d <= 6) greet = "五四青年节快乐！";
+            else if (m == 6 && d == 1) greet = "儿童节快乐！";
+            else if (m == 10 && d == 1) greet = "国庆节快乐！";
+            else if (m == 12 && d == 25) greet = "圣诞快乐！";
+            else if (m == 9 && d >= 20 && d <= 26) greet = "中秋快乐！";
+            // 中考（6月中旬）/高考（6月7-9日）
+            else if (m == 6 && d >= 7 && d <= 9) greet = "高考加油！沉着应考，未来可期！";
+            else if (m == 6 && d >= 15 && d <= 17) greet = "中考加油！你一定可以的！";
+            if (greet != null) {
+                ((TextView) root.findViewById(R.id.tv_grade)).append("\n" + greet);
+            }
+        } catch (Throwable ignored) {}
     }
 
     public void onBgPicked(Uri uri) {
