@@ -138,7 +138,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             int textS = dark ? 0xFF9AA0A6 : 0xFF5F6368;
             View root = ((ViewGroup) getWindow().getDecorView()).getChildAt(0);
             if (root == null) return;
-            root.setBackgroundColor(pageBg);
+            // 如果用户自定义了背景图，不覆盖 root 背景
+            String bg = prefs.bgPath();
+            if (bg == null || bg.isEmpty()) root.setBackgroundColor(pageBg);
             applyNode(root, dark, pageBg, cardBg, textP, textS, 0);
         } catch (Throwable ignored) {}
     }
@@ -157,17 +159,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
             // 卡片式 LinearLayout：统一卡片色
             v.setBackgroundColor(cardBg);
         }
-        // 所有 TextView：dark 下强制浅色，亮下强制深色（主题蓝除外）
-        if (v instanceof TextView) {
+        // 文字变色：跳过 Button（按钮有自己的样式，浅蓝底配深色字）
+        if (v instanceof TextView && !(v instanceof android.widget.Button)) {
             TextView t = (TextView) v;
             int c = t.getCurrentTextColor();
             if (c == prefs.accent() || c == 0xFF1F6FEB || c == 0xFF188038) {
-                // 主题色/绿色（权限库文字）保持
+                // 主题色/绿色保持
             } else {
-                // 副标题类灰色（5F6368 等）用 textS，其余用 textP
                 if (dark) {
                     if (c == 0xFF5F6368 || c == 0xFF80868B || c == 0xFF9AA0A6) t.setTextColor(textS);
-                    else t.setTextColor(textP);
+                    else if (c != 0xFFFFFFFF && c != 0xFFE8EAED) t.setTextColor(textP);
                 } else {
                     if (c == 0xFF9AA0A6 || c == 0xFFE8EAED || c == 0xFFFFFFFF) t.setTextColor(textP);
                 }
