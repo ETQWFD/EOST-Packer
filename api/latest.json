@@ -1,5 +1,5 @@
 {
   "version": "1.7.2",
   "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.2/EOST-Packer-v1.7.2.apk",
-  "notes": "工具解压到外部Android/data目录(SELinux可执行)、路径显示友好名称不再显示content:// URI"
+  "notes": "工具解压到外部Android/data目录解决Permission denied、路径显示友好名称"
 }
