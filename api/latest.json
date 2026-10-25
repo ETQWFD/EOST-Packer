@@ -1,5 +1,5 @@
 {
-  "version": "1.7.0",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7/EOST-Packer-v1.7.0.apk",
-  "notes": "修复32位aapt2 Permission denied、暗黑模式卡片真正深色可读、chmod强制执行权限"
+  "version": "1.7.1",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.1/EOST-Packer-v1.7.1.apk",
+  "notes": "修复暗黑模式按钮文字看不清、背景图被覆盖、32位aapt2权限"
 }
