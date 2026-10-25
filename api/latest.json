@@ -1,5 +1,5 @@
 {
-  "version": "1.4.1",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.4.1/EOST-Packer-v1.4.1.apk",
-  "notes": "修复文件夹读取Unsupported Uri、zip识别、补全、签名文件导入（jks/keystore+密码别名）"
+  "version": "1.5.0",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.5/EOST-Packer-v1.5.0.apk",
+  "notes": "路径类型校验、依赖自动检测下载（Node.js/npm/Java/Python，Termux官方仓库）"
 }

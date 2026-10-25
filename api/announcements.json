@@ -1,5 +1,12 @@
 [
   {
+    "id": 8,
+    "title": "v1.5 依赖自动下载 + 路径校验",
+    "version": "1.5.0",
+    "date": "2026-10-25",
+    "body": "· 路径校验：选择压缩包必须为 .zip，选择文件夹必须是目录，选错立即提示，不再报 Invalid URI\n· 依赖自动检测：点击补全自动扫描项目（package.json→Node.js/npm、build.gradle→Java、requirements.txt→Python），缺失时自动弹窗\n· 一键自动下载：从 Termux 官方仓库下载 deb 包（含依赖），自动解包安装，日志实时显示进度\n· Node.js 约 9.5MB，Java 约 92MB（弹窗有提示）"
+  },
+  {
     "id": 7,
     "title": "v1.4.1 修复文件夹读取与签名导入",
     "version": "1.4.1",

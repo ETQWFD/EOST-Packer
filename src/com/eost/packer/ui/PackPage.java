@@ -125,9 +125,47 @@ public class PackPage {
         if (data == null) return;
         Uri uri = data.getData();
         if (uri == null) return;
+        if (req == REQ_ZIP) {
+            // 必须是 zip 压缩包
+            if (!isZipUri(uri)) {
+                act.toast("请选择 .zip 压缩包（当前选择不是压缩包）");
+                return;
+            }
+        } else if (req == REQ_FOLDER) {
+            // 必须是目录树（tree/）
+            if (!isTreeUri(uri)) {
+                act.toast("请选择文件夹（当前选择不是文件夹）");
+                return;
+            }
+        }
         String path = uri.toString();
         act.prefs().setProjectPath(path);
         tvPath.setText(path);
+    }
+
+    private boolean isZipUri(Uri uri) {
+        try {
+            String mime = act.getContentResolver().getType(uri);
+            if (mime != null && mime.contains("zip")) return true;
+        } catch (Exception ignored) {}
+        try {
+            android.database.Cursor c = act.getContentResolver().query(uri, null, null, null, null);
+            if (c != null) {
+                int idx = c.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME);
+                if (idx >= 0 && c.moveToFirst()) {
+                    String n = c.getString(idx);
+                    c.close();
+                    return n != null && (n.endsWith(".zip") || n.endsWith(".apk"));
+                }
+                c.close();
+            }
+        } catch (Exception ignored) {}
+        return false;
+    }
+
+    private boolean isTreeUri(Uri uri) {
+        String s = uri.toString();
+        return s.contains("/tree/");
     }
 
     private void showSettings() {
@@ -230,6 +268,37 @@ public class PackPage {
         new AlertDialog.Builder(act)
                 .setView(box)
                 .setPositiveButton(R.string.close, null)
+                .show();
+    }
+
+    /** 依赖缺失时弹出的下载窗口 */
+    public void showDepsDialog(com.eost.packer.core.DependencyManager dm, java.util.List<String> missing) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("检测到项目需要以下运行时依赖：\n\n");
+        for (String s : missing) sb.append(" · ").append(s).append("\n");
+        sb.append("\n点击下载后将自动从 Termux 官方仓库下载并解包安装，安装完成后即可正常使用。\n\n注意：Java 完整运行时较大（约 200MB+），若项目为已编译安卓工程（含 classes.dex），可无需下载。");
+        new AlertDialog.Builder(act)
+                .setTitle("自动下载依赖")
+                .setMessage(sb.toString())
+                .setPositiveButton("自动下载", (d, i) -> {
+                    d.dismiss();
+                    log("[依赖] 开始自动下载…");
+                    new Thread(() -> {
+                        boolean all = true;
+                        for (String s : missing) {
+                            String key = s.startsWith("Node") ? "nodejs-lts"
+                                    : s.startsWith("Java") ? "openjdk-17"
+                                    : s.startsWith("Python") ? "python" : null;
+                            if (key == null) continue;
+                            log("[依赖] 下载安装 " + key + " …");
+                            boolean ok = dm.install(key, PackPage.this::log);
+                            log(ok ? "[依赖] " + key + " 安装完成" : "[依赖] " + key + " 安装失败，请检查网络后重试");
+                            if (!ok) all = false;
+                        }
+                        log(all ? "[依赖] 全部依赖已就绪" : "[依赖] 部分依赖安装未完成，可重新点击补全重试");
+                    }).start();
+                })
+                .setNegativeButton(R.string.cancel, null)
                 .show();
     }
 

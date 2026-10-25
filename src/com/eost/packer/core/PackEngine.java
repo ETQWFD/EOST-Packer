@@ -213,6 +213,22 @@ public class PackEngine {
             if (!assetsDir.exists()) log("[提示] assets/ 目录不存在（无此目录时可忽略）");
             log("[工具链] ABI=" + ToolExtractor.pickAbi()
                     + (tools.hasTools() ? " 已就绪" : " 未内置(仅支持 arm64/arm32)"));
+
+            // 运行时依赖检测（node/npm/java/python）
+            try {
+                DependencyManager dm = new DependencyManager(act);
+                java.util.List<String> missing = dm.detectNeeds(project);
+                if (missing.isEmpty()) {
+                    log("[依赖] 未检测到缺失的运行时依赖（node/npm/java/python）");
+                } else {
+                    log("[依赖] 检测到缺少运行时: " + missing.toString());
+                    log("[依赖] 正在弹出下载窗口…");
+                    act.runOnUiThread(() -> page.showDepsDialog(dm, missing));
+                }
+            } catch (Throwable te) {
+                log("[依赖] 检测失败: " + te.getMessage());
+            }
+
             log("== 扫描完成 ==");
         }).start();
     }

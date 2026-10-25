@@ -29,12 +29,13 @@ aapt2 link \
 
 echo "[3/6] javac"
 find src $WORK/gen -name "*.java" > $WORK/sources.txt
-javac --release 8 -classpath $PLATFORM \
+javac --release 8 -classpath $PLATFORM:libs/* \
   -d $WORK/classes @$WORK/sources.txt 2>&1 | tee $WORK/javac.log
 
 echo "[4/6] d8"
 find $WORK/classes -name "*.class" > $WORK/classes.txt
-d8 --lib $PLATFORM --min-api 21 --output $WORK/dex @$WORK/classes.txt 2>&1 | tee $WORK/d8.log
+d8 --lib $PLATFORM --min-api 21 --output $WORK/dex @$WORK/classes.txt \
+  libs/commons-compress.jar libs/xz.jar 2>&1 | tee $WORK/d8.log
 
 echo "[5/6] merge dex into apk"
 cd $WORK/dex && zip -u ../base.apk classes.dex && cd ../..
