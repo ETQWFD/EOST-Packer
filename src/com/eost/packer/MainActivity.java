@@ -56,7 +56,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
         tabSettings.setOnClickListener(this);
 
         requestPermissions();
-        startService(new Intent(this, PackService.class));
+        try {
+            startService(new Intent(this, PackService.class));
+        } catch (Throwable ignored) {
+        }
     }
 
     private void applyTheme() {
@@ -68,33 +71,36 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void requestPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!Environment.isExternalStorageManager()) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (!Environment.isExternalStorageManager()) {
+                    try {
+                        Intent i = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                        i.setData(Uri.parse("package:" + getPackageName()));
+                        startActivity(i);
+                    } catch (Exception ignored) {}
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE
+                    }, 1);
+                }
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
                 try {
-                    Intent i = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                    Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
                     i.setData(Uri.parse("package:" + getPackageName()));
                     startActivity(i);
                 } catch (Exception ignored) {}
             }
-        } else {
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
                     != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                }, 1);
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 2);
             }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
-            try {
-                Intent i = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-                i.setData(Uri.parse("package:" + getPackageName()));
-                startActivity(i);
-            } catch (Exception ignored) {}
-        }
-        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 2);
+        } catch (Throwable ignored) {
         }
     }
 
@@ -122,8 +128,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     }
 
     private void setTab(Button active) {
-        int on = getColor(R.color.primary);
-        int off = getColor(R.color.text_sub);
+        int on = getResources().getColor(R.color.primary);
+        int off = getResources().getColor(R.color.text_sub);
         tabHome.setTextColor(active == tabHome ? on : off);
         tabPack.setTextColor(active == tabPack ? on : off);
         tabSettings.setTextColor(active == tabSettings ? on : off);

@@ -1,5 +1,12 @@
 [
   {
+    "id": 2,
+    "title": "v1.1 修复版发布",
+    "version": "1.1.0",
+    "date": "2026-10-25",
+    "body": "修复了旧版本在部分手机（尤其 Android 6/7 与 Android 13/14）上闪退的问题：\n· 签名改为 v1+v2 双方案（ETC 证书，CN=ETC, ET协会）\n· 最低系统要求降至 Android 5.0，兼容 32/64 位/x86 全部设备\n· 前台服务、权限申请全面容错，任何异常写入 etdo/crash.log 不再闪退\n· 自带应用图标\n请更新至 v1.1。"
+  },
+  {
     "id": 1,
     "title": "EOST Packer 正式发布",
     "version": "1.0.0",

@@ -34,7 +34,7 @@
             <Button android:id="@+id/btn_pack" style="@style/Btn"
                 android:text="@string/btn_pack"
                 android:backgroundTint="@color/primary"
-                android:textColor="#00000000"/>
+                android:textColor="#FFFFFF"/>
         </LinearLayout>
 
         <LinearLayout style="@style/Card" android:orientation="vertical">

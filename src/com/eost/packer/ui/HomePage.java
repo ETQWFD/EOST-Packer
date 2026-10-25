@@ -59,7 +59,6 @@ public class HomePage {
             return;
         }
         for (Announcement a : data) {
-            View card = act.getLayoutInflater().inflate(R.layout.home_fragment, null);
             LinearLayout box = new LinearLayout(act);
             box.setOrientation(LinearLayout.VERTICAL);
             box.setPadding(48, 40, 48, 40);

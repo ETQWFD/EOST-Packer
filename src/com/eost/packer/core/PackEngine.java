@@ -147,13 +147,16 @@ public class PackEngine {
                         baseApk.getAbsolutePath(), aligned.getAbsolutePath());
                 log("    zipalign 退出码=" + rc);
 
-                log("[5/6] apksigner 签名 (v1+v2)…");
+                log("[5/6] apksigner 签名 (v1+v2, ETC)…");
                 File signed = new File(outDir, "eost-output.apk");
+                File ks = defaultKeystore();
                 rc = run(tools.bin("apksigner"), "sign",
-                        "--ks", defaultKeystore().getAbsolutePath(),
-                        "--ks-pass", "pass:eost123",
-                        "--ks-key-alias", "eost",
-                        "--key-pass", "pass:eost123",
+                        "--ks", ks.getAbsolutePath(),
+                        "--ks-pass", "pass:etc123",
+                        "--ks-key-alias", "etc",
+                        "--key-pass", "pass:etc123",
+                        "--v1-signing-enabled", "true",
+                        "--v2-signing-enabled", "true",
                         "--out", signed.getAbsolutePath(),
                         aligned.getAbsolutePath());
                 log("    apksigner 退出码=" + rc);
@@ -208,15 +211,16 @@ public class PackEngine {
     }
 
     private File defaultKeystore() throws Exception {
-        File ks = new File(act.getFilesDir(), "eost.jks");
+        // 使用软件内置的 ETC 签名（CN=ETC, 龙腾OS / ET协会）
+        File ks = new File(act.getFilesDir(), "tools/etckey.jks");
         if (ks.exists()) return ks;
-        run(new File(act.getFilesDir(), "tools/keytool"),
-                "-genkeypair", "-v",
-                "-keystore", ks.getAbsolutePath(),
-                "-alias", "eost",
-                "-keyalg", "RSA", "-keysize", "2048", "-validity", "10950",
-                "-storepass", "eost123", "-keypass", "eost123",
-                "-dname", "CN=EOST, OU=ET, O=LTOS, L=MZ, ST=GD, C=CN");
+        // 兜底：从 assets 复制
+        try (InputStream in = act.getAssets().open("etckey.jks");
+             FileOutputStream fo = new FileOutputStream(ks)) {
+            byte[] buf = new byte[8192];
+            int r;
+            while ((r = in.read(buf)) > 0) fo.write(buf, 0, r);
+        }
         return ks;
     }
 

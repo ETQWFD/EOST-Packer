@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.eost.packer"
-    android:versionCode="1"
-    android:versionName="1.0">
+    android:versionCode="2"
+    android:versionName="1.1">
 
-    <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="35"/>
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="35"/>
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -21,8 +21,9 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
 
     <application
+        android:name=".App"
         android:label="EOST Packer"
-        android:icon="@android:drawable/sym_def_app_icon"
+        android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.EOST"
         android:requestLegacyExternalStorage="true"
         android:allowBackup="true"

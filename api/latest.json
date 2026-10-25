@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.0/EOST-Packer.apk",
-  "notes": "首个正式版本"
+  "version": "1.1.0",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.1/EOST-Packer.apk",
+  "notes": "修复闪退：v1+v2签名、支持Android 5.0+、ETC签名、图标修复"
 }
