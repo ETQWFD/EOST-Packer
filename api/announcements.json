@@ -1,5 +1,12 @@
 [
   {
+    "id": 16,
+    "title": "v1.7.6 改用aapt根治打包失败",
+    "version": "1.7.6",
+    "date": "2026-10-27",
+    "body": "· 根因：aapt2 动态链接依赖 libfmt.so 等，但 Android 解压 .so 时始终缺失\n· 修复：改用 aapt（静态链接，无外部依赖）打包资源\n· 32/64 位全支持，不再报 libfmt.so not found"
+  },
+  {
     "id": 15,
     "title": "v1.7.5 根因修复zipalign对齐",
     "version": "1.7.5",

@@ -75,18 +75,17 @@ public class Web2ApkEngine {
                 te.ensure();
                 if (!te.hasTools()) { page.log("[错误] 当前设备架构未内置工具链"); return; }
 
-                // 4. aapt2 compile+link
-                page.log("[3/5] aapt2 编译资源…");
+                // 4. aapt package（静态链接，无需libfmt.so）
+                page.log("[3/5] aapt 打包资源…");
                 File resDir = new File(work, "res");
-                File resZip = new File(work, "res.zip");
-                run(te.bin("aapt2").getAbsolutePath(), "compile", "--dir", resDir.getAbsolutePath(), "-o", resZip.getAbsolutePath());
                 File base = new File(work, "base.apk");
-                run(te.bin("aapt2").getAbsolutePath(), "link",
+                run(te.bin("aapt").getAbsolutePath(), "package",
+                        "-f",
+                        "-M", new File(work, "AndroidManifest.xml").getAbsolutePath(),
+                        "-S", resDir.getAbsolutePath(),
                         "-I", te.androidJar().getAbsolutePath(),
-                        "--manifest", new File(work, "AndroidManifest.xml").getAbsolutePath(),
                         "-A", new File(work, "assets").getAbsolutePath(),
-                        "-o", base.getAbsolutePath(),
-                        resZip.getAbsolutePath());
+                        "-F", base.getAbsolutePath());
 
                 // 5. 加入 webview.dex → zipalign → 签名
                 page.log("[4/5] 合并 WebView dex…");

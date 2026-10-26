@@ -355,26 +355,22 @@ public class PackEngine {
                 File dex = findDex(project);
                 if (dex == null) { log("[错误] 未找到 classes.dex（工程需为已编译状态）"); return; }
 
-                log("[1/5] aapt2 编译资源…");
-                File resZip = new File(work, "res.zip");
-                run(tools.bin("aapt2"), "compile", "--dir", res.getAbsolutePath(),
-                        "-o", resZip.getAbsolutePath());
-
-                log("[2/5] aapt2 link 生成基础 APK…");
+                log("[1/5] aapt 打包资源（静态链接，无需libfmt.so）…");
                 File baseApk = new File(work, "base.apk");
-                java.util.List<String> linkCmd = new java.util.ArrayList<>();
-                linkCmd.add(tools.bin("aapt2").getAbsolutePath());
-                linkCmd.add("link");
-                linkCmd.add("-I"); linkCmd.add(tools.androidJar().getAbsolutePath());
-                linkCmd.add("--manifest"); linkCmd.add(manifest.getAbsolutePath());
+                java.util.List<String> aaptCmd = new java.util.ArrayList<>();
+                aaptCmd.add(tools.bin("aapt").getAbsolutePath());
+                aaptCmd.add("package");
+                aaptCmd.add("-f");
+                aaptCmd.add("-M"); aaptCmd.add(manifest.getAbsolutePath());
+                aaptCmd.add("-S"); aaptCmd.add(res.getAbsolutePath());
+                aaptCmd.add("-I"); aaptCmd.add(tools.androidJar().getAbsolutePath());
                 File projAssets = new File(project, "assets");
                 if (projAssets.exists() && projAssets.listFiles() != null
                         && projAssets.listFiles().length > 0) {
-                    linkCmd.add("-A"); linkCmd.add(projAssets.getAbsolutePath());
+                    aaptCmd.add("-A"); aaptCmd.add(projAssets.getAbsolutePath());
                 }
-                linkCmd.add("-o"); linkCmd.add(baseApk.getAbsolutePath());
-                linkCmd.add(resZip.getAbsolutePath());
-                runList(linkCmd);
+                aaptCmd.add("-F"); aaptCmd.add(baseApk.getAbsolutePath());
+                runList(aaptCmd);
 
                 log("[3/5] 合并 dex / lib …");
                 Map<String, File> adds = new LinkedHashMap<>();
