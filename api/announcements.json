@@ -1,5 +1,12 @@
 [
   {
+    "id": 15,
+    "title": "v1.7.5 根因修复zipalign对齐",
+    "version": "1.7.5",
+    "date": "2026-10-26",
+    "body": "· 根因：zipalign 缺少 -p 参数（.so 页对齐），导致 Android 解压 .so 时失败\n· 修复：zipalign -f -p 4，.so 4K 页对齐\n· 32/64 位全支持"
+  },
+  {
     "id": 14,
     "title": "v1.7.4 根治依赖加载+AI弹窗",
     "version": "1.7.4",

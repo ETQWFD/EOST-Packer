@@ -52,7 +52,7 @@ if [ -d jniLibs ]; then
 fi
 
 echo "[6/6] zipalign + apksigner (ETC, v1+v2)"
-zipalign -f 4 $WORK/base.apk $WORK/aligned.apk
+zipalign -f -p 4 $WORK/base.apk $WORK/aligned.apk
 
 apksigner sign \
   --ks assets/etckey.jks --ks-pass pass:etc123 \
