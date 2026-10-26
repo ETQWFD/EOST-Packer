@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.eost.packer"
-    android:versionCode="14"
-    android:versionName="1.7.3">
+    android:versionCode="15"
+    android:versionName="1.7.4">
 
     <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="35"/>
 
@@ -26,6 +26,8 @@
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.EOST"
         android:requestLegacyExternalStorage="true"
+        android:extractNativeLibs="true"
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:supportsRtl="true">
 

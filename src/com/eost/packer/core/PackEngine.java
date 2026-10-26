@@ -312,6 +312,25 @@ public class PackEngine {
         }).start();
     }
 
+    /** 同步调用 AI，返回响应文本（供聊天弹窗用） */
+    public String aiHelpSync(String userQuery) {
+        String ep = act.prefs().aiEndpoint();
+        String key = act.prefs().aiKey();
+        String model = act.prefs().aiModel();
+        if (ep == null || ep.isEmpty()) return "请先到 设置 → AI 调用配置 填入 API 地址和 Key";
+        try {
+            File project = resolveProject();
+            String ctx = project != null ? "项目结构:\n" + treeOf(project, 0) : "（未选择项目）";
+            String prompt = "你是 EOST Packer 内置 AI 助手。用户问题: " + userQuery + "\n\n" + ctx + "\n\n请给出简洁的修复建议。";
+            String resp = ApiClient.aiChat(ep, key, model, prompt);
+            JSONObject o = new JSONObject(resp);
+            return o.getJSONArray("choices").getJSONObject(0)
+                    .getJSONObject("message").getString("content");
+        } catch (Exception e) {
+            return "调用失败: " + e.getMessage();
+        }
+    }
+
     public void startPack() {
         if (aiBusy) { page.log("[锁定] AI 正在工作，打包按钮已禁用"); return; }
         new Thread(() -> {

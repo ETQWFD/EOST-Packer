@@ -1,5 +1,6 @@
 package com.eost.packer.ui;
 
+import java.io.File;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -269,10 +270,21 @@ public class SettingsPage {
     }
 
     public void onBgPicked(Uri uri) {
-        if (uri != null) {
-            act.prefs().setBgPath(uri.toString());
+        if (uri == null) return;
+        try {
+            // 把选中图片复制到 app 私有目录，避免 content:// 权限失效
+            File bgFile = new File(act.getFilesDir(), "bg.jpg");
+            try (java.io.InputStream in = act.getContentResolver().openInputStream(uri);
+                 java.io.FileOutputStream out = new java.io.FileOutputStream(bgFile)) {
+                byte[] buf = new byte[8192];
+                int r;
+                while ((r = in.read(buf)) > 0) out.write(buf, 0, r);
+            }
+            act.prefs().setBgPath(bgFile.getAbsolutePath());
             act.toast("背景图片已更换");
             act.recreate();
+        } catch (Exception e) {
+            act.toast("设置失败: " + e.getMessage());
         }
     }
 

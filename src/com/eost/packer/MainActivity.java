@@ -99,7 +99,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
             if (bg != null && !bg.isEmpty()) {
                 android.graphics.drawable.Drawable d = null;
                 try {
-                    if (bg.startsWith("content://")) {
+                    java.io.File f = new java.io.File(bg);
+                    if (f.exists()) {
+                        d = android.graphics.drawable.Drawable.createFromPath(f.getAbsolutePath());
+                    } else if (bg.startsWith("content://")) {
                         d = android.graphics.drawable.Drawable.createFromStream(
                                 getContentResolver().openInputStream(Uri.parse(bg)), "bg");
                     }

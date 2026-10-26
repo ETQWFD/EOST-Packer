@@ -47,7 +47,8 @@ if [ -d jniLibs ]; then
       cp -r "jniLibs/$abi" "build/lib/$abi"
     fi
   done
-  (cd build && zip -ru ../$WORK/base.apk lib/)
+  # .so 用 stored 方式（-0 不压缩），兼容 extractNativeLibs=false 的设备
+  (cd build && zip -0 -ru ../$WORK/base.apk lib/)
 fi
 
 echo "[6/6] zipalign + apksigner (ETC, v1+v2)"

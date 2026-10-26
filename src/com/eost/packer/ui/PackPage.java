@@ -103,7 +103,7 @@ public class PackPage {
         root.findViewById(R.id.btn_folder).setOnClickListener(v -> chooseFolder());
         root.findViewById(R.id.btn_pack_settings).setOnClickListener(v -> showSettings());
         root.findViewById(R.id.btn_fix).setOnClickListener(v -> engine.fixDeps());
-        root.findViewById(R.id.btn_ai).setOnClickListener(v -> engine.aiHelp());
+        root.findViewById(R.id.btn_ai).setOnClickListener(v -> showAiChat());
         btnPack.setOnClickListener(v -> engine.startPack());
 
         String saved = act.prefs().projectPath();
@@ -359,4 +359,45 @@ public class PackPage {
     }
 
     public String projectPath() { return tvPath.getText().toString(); }
+
+    /** AI 聊天弹窗：用户输入问题，AI 响应显示在弹窗内 */
+    private void showAiChat() {
+        android.widget.LinearLayout box = new android.widget.LinearLayout(act);
+        box.setOrientation(android.widget.LinearLayout.VERTICAL);
+        box.setPadding(24, 24, 24, 24);
+        final android.widget.ScrollView sv = new android.widget.ScrollView(act);
+        final android.widget.TextView tv = new android.widget.TextView(act);
+        tv.setTextSize(14);
+        tv.setText("你好！我是 EOST AI 助手。输入你的问题（如：aapt2 报错怎么办？帮我修 build.gradle），我会帮你分析并给出修复建议。\n\n");
+        sv.addView(tv);
+        final android.widget.EditText et = new android.widget.EditText(act);
+        et.setHint("输入问题...");
+        et.setMinLines(2);
+        android.widget.LinearLayout.LayoutParams p = new android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT);
+        p.topMargin = 16;
+        et.setLayoutParams(p);
+        box.addView(sv);
+        box.addView(et);
+        new android.app.AlertDialog.Builder(act)
+                .setTitle("AI 助手")
+                .setView(box)
+                .setPositiveButton("发送", (d, w) -> {
+                    String q = et.getText().toString().trim();
+                    if (q.isEmpty()) return;
+                    tv.append("你: " + q + "\n\n");
+                    et.setText("");
+                    // 调用 engine.aiHelp() 获取响应（在后台线程）
+                    new Thread(() -> {
+                        String resp = engine.aiHelpSync(q);
+                        ui.post(() -> {
+                            tv.append("AI: " + resp + "\n\n");
+                            sv.post(() -> sv.fullScroll(View.FOCUS_DOWN));
+                        });
+                    }).start();
+                })
+                .setNegativeButton("关闭", null)
+                .show();
+    }
 }

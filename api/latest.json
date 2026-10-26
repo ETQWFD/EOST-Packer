@@ -1,5 +1,5 @@
 {
-  "version": "1.7.3",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.3/EOST-Packer-v1.7.3.apk",
-  "notes": "修复libfmt.so not found（依赖.so平铺到lib/<abi>/根目录）"
+  "version": "1.7.4",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.4/EOST-Packer-v1.7.4.apk",
+  "notes": "根治libfmt.so not found（extractNativeLibs=true+.so不压缩）、AI聊天弹窗、背景图可更换"
 }

@@ -1,5 +1,12 @@
 [
   {
+    "id": 14,
+    "title": "v1.7.4 根治依赖加载+AI弹窗",
+    "version": "1.7.4",
+    "date": "2026-10-26",
+    "body": "· 修复 libfmt.so not found：manifest 加 extractNativeLibs=true，.so 不压缩（Stored）打包\n· AI 帮助改为聊天弹窗：可输入问题，AI 返回修复建议\n· 背景图片选中后复制到 app 私有目录，不再因 content:// 权限失效\n· 32/64 位全支持"
+  },
+  {
     "id": 13,
     "title": "v1.7.3 修复libfmt.so找不到",
     "version": "1.7.3",
