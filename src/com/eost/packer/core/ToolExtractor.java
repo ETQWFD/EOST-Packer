@@ -46,15 +46,7 @@ public class ToolExtractor {
     }
 
     public void ensure() {
-        // 只预加载关键依赖 .so（不遍历，避免加载系统 .so 崩溃）
-        try {
-            String libDir = ctx.getApplicationInfo().nativeLibraryDir;
-            String[] preload = {"libc++_shared.so", "libz.so", "libz.so.1", "libfmt.so",
-                    "libpng.so", "libpng16.so", "libexpat.so", "libprotobuf.so"};
-            for (String n : preload) {
-                try { System.load(new File(libDir, n).getAbsolutePath()); } catch (Exception ignored) {}
-            }
-        } catch (Exception ignored) {}
+        // 不预加载 .so（避免崩溃），让 Android 自动处理
         AssetManager am = ctx.getAssets();
         String[] names;
         try {

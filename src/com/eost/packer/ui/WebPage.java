@@ -24,7 +24,7 @@ public class WebPage {
         engine = new Web2ApkEngine(act, this);
 
         ((Button) root.findViewById(R.id.web_zip)).setOnClickListener(v -> {
-            Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+            Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             i.setType("*/*");
             i.addCategory(Intent.CATEGORY_OPENABLE);
             act.startActivityForResult(Intent.createChooser(i, act.getString(R.string.choose_zip)), REQ_ZIP);
