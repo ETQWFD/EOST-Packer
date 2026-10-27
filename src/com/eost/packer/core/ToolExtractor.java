@@ -46,6 +46,20 @@ public class ToolExtractor {
     }
 
     public void ensure() {
+        // 预加载所有依赖 .so，触发 Android 解压到 nativeLibraryDir
+        try {
+            String libDir = ctx.getApplicationInfo().nativeLibraryDir;
+            File nd = new File(libDir);
+            File[] libs = nd.listFiles();
+            if (libs != null) {
+                for (File f : libs) {
+                    String n = f.getName();
+                    if (n.endsWith(".so") || n.endsWith(".so.1")) {
+                        try { System.load(f.getAbsolutePath()); } catch (Exception ignored) {}
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
         AssetManager am = ctx.getAssets();
         String[] names;
         try {

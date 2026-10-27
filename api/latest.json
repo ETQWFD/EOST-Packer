@@ -1,5 +1,5 @@
 {
-  "version": "1.7.6",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.6/EOST-Packer-v1.7.6.apk",
-  "notes": "放弃aapt2改用aapt（静态链接，无需libfmt.so），根治打包失败"
+  "version": "1.7.7",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.7/EOST-Packer-v1.7.7.apk",
+  "notes": "修复libz.so.1缺失+预加载所有依赖.so+放宽zip选择识别"
 }

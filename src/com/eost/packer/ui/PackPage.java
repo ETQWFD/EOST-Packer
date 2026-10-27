@@ -177,9 +177,10 @@ public class PackPage {
     }
 
     private boolean isZipUri(Uri uri) {
+        // 放宽：只要能打开就接受（不强制 mime/扩展名）
         try {
             String mime = act.getContentResolver().getType(uri);
-            if (mime != null && mime.contains("zip")) return true;
+            if (mime != null && (mime.contains("zip") || mime.contains("octet-stream") || mime.contains("binary"))) return true;
         } catch (Exception ignored) {}
         try {
             android.database.Cursor c = act.getContentResolver().query(uri, null, null, null, null);
@@ -188,12 +189,13 @@ public class PackPage {
                 if (idx >= 0 && c.moveToFirst()) {
                     String n = c.getString(idx);
                     c.close();
-                    return n != null && (n.endsWith(".zip") || n.endsWith(".apk"));
+                    if (n != null) return true; // 只要有文件名就接受
                 }
                 c.close();
             }
         } catch (Exception ignored) {}
-        return false;
+        String s = uri.toString();
+        return s.startsWith("content://") || s.startsWith("file://");
     }
 
     private boolean isTreeUri(Uri uri) {
