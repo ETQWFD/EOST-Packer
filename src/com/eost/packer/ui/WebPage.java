@@ -25,7 +25,7 @@ public class WebPage {
 
         ((Button) root.findViewById(R.id.web_zip)).setOnClickListener(v -> {
             Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-            i.setType("application/zip");
+            i.setType("*/*");
             i.addCategory(Intent.CATEGORY_OPENABLE);
             act.startActivityForResult(Intent.createChooser(i, act.getString(R.string.choose_zip)), REQ_ZIP);
         });

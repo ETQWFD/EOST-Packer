@@ -125,7 +125,7 @@ public class PackPage {
 
     private void chooseZip() {
         Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-        i.setType("application/zip");
+        i.setType("*/*");  // 接受所有文件类型
         act.startActivityForResult(Intent.createChooser(i, "选择项目压缩包"), REQ_ZIP);
     }
 

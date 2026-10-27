@@ -1,5 +1,5 @@
 {
-  "version": "1.7.7",
-  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.7/EOST-Packer-v1.7.7.apk",
-  "notes": "修复libz.so.1缺失+预加载所有依赖.so+放宽zip选择识别"
+  "version": "1.7.8",
+  "url": "https://github.com/ETQWFD/EOST-Packer/releases/download/v1.7.8/EOST-Packer-v1.7.8.apk",
+  "notes": "修复闪退（预加载.so太激进）+文件选择器接受所有格式"
 }
